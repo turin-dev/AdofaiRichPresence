@@ -1,0 +1,10 @@
+{
+    "Id": "AdofaiRichPresence",
+    "DisplayName": "ADOFAI Rich Presence",
+    "Author": "turin-dev",
+    "Version": "1.0.0",
+    "ManagerVersion": "0.22.14",
+    "HomePage": "https://github.com/turin-dev/AdofaiRichPresence",
+    "AssemblyName": "AdofaiRichPresence.dll",
+    "EntryMethod": "AdofaiRichPresence.Startup.Load"
+}

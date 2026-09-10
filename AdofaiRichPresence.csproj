@@ -1,0 +1,74 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>10</LangVersion>
+    <Nullable>disable</Nullable>
+    <AssemblyName>AdofaiRichPresence</AssemblyName>
+    <RootNamespace>AdofaiRichPresence</RootNamespace>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <!-- Point this at your own ADOFAI install if it differs. -->
+    <AdofaiDir Condition="'$(AdofaiDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\A Dance of Fire and Ice</AdofaiDir>
+    <AdofaiManaged>$(AdofaiDir)\A Dance of Fire and Ice_Data\Managed</AdofaiManaged>
+  </PropertyGroup>
+
+  <!-- "Game" configuration builds straight into the game's Mods folder for quick iteration. -->
+  <PropertyGroup Condition="'$(Configuration)'=='Game'">
+    <OutputPath>$(AdofaiDir)\Mods\AdofaiRichPresence\</OutputPath>
+    <DebugType>portable</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Discord RPC client only; Harmony comes from Unity Mod Manager's own 0Harmony.dll below
+         so the mod always matches the version UMM loads at runtime. -->
+    <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>$(AdofaiManaged)\UnityModManager\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(AdofaiManaged)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(AdofaiManaged)\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(AdofaiManaged)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>$(AdofaiManaged)\UnityEngine.AudioModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(AdofaiManaged)\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(AdofaiManaged)\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="RDTools">
+      <HintPath>$(AdofaiManaged)\RDTools.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityModManager">
+      <HintPath>$(AdofaiManaged)\UnityModManager\UnityModManager.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Info.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
