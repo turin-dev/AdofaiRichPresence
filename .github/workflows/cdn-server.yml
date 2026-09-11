@@ -1,12 +1,21 @@
-name: CI
+name: CDN server CI
 
 on:
   push:
+    paths:
+      - 'cdn-server/**'
+      - '.github/workflows/cdn-server.yml'
   pull_request:
+    paths:
+      - 'cdn-server/**'
+      - '.github/workflows/cdn-server.yml'
 
 jobs:
   check:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cdn-server
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

@@ -64,3 +64,7 @@ to avoid the two fighting over the same Discord connection.
   `scrConductor`, `scrLevelMaker`.
 - `Core/PresenceManager.cs` — builds and pushes the Discord Rich Presence payload.
 - `Core/Patches.cs` — Harmony patch that mutes the game's built-in presence.
+
+The optional upload service is included in this repository under `cdn-server/`.
+Its own `README.md` documents deployment, upload authentication, proxy handling,
+and the health endpoint. Run its tests from that directory with `npm test`.

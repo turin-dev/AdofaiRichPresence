@@ -1,2 +1,7 @@
 bin/
 obj/
+
+# CDN server runtime files
+cdn-server/node_modules/
+cdn-server/storage/
+cdn-server/.env
