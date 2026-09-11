@@ -4,6 +4,15 @@ on:
   push:
     paths:
       - 'cdn-server/**'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - '.github/workflows/cdn-server.yml'
+
+  pull_request:
+    paths:
+      - 'cdn-server/**'
+      - 'Dockerfile'
+      - '.dockerignore'
       - '.github/workflows/cdn-server.yml'
 
 permissions:
@@ -12,10 +21,6 @@ permissions:
 concurrency:
   group: cdn-server-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-  pull_request:
-    paths:
-      - 'cdn-server/**'
-      - '.github/workflows/cdn-server.yml'
 
 jobs:
   check:
@@ -33,6 +38,21 @@ jobs:
       - name: Build root Docker image
         working-directory: .
         run: docker build --tag adofai-cdn-server:ci .
+      - name: Build standalone Docker image
+        run: docker build --tag adofai-cdn-server:standalone .
+      - name: Container healthcheck
+        working-directory: .
+        run: |
+          docker run --detach --name adofai-cdn-ci --publish 18787:8787 adofai-cdn-server:ci
+          trap 'docker rm --force adofai-cdn-ci >/dev/null 2>&1 || true' EXIT
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:18787/health; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs adofai-cdn-ci
+          exit 1
       - name: Smoke test
         run: |
           UPLOAD_SECRET=ci node server.js &
