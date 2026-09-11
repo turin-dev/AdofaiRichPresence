@@ -136,3 +136,22 @@ test("reports storage failures without terminating the server", async (t) => {
     assert.equal(unavailable.status, 503);
     assert.deepEqual(await unavailable.json(), { ok: false, error: "storage unavailable" });
 });
+
+test("survives an upload client disconnect", async (t) => {
+    const app = await startServer();
+    t.after(() => app.stop());
+
+    await new Promise((resolve, reject) => {
+        const request = require("node:http").request(`${app.baseUrl}/upload`, {
+            method: "POST",
+            headers: { "Content-Type": "image/png", "Content-Length": png.length + 100 },
+        });
+        request.once("error", resolve);
+        request.once("response", () => reject(new Error("server answered before disconnect")));
+        request.write(png.subarray(0, 8));
+        request.destroy();
+    });
+
+    const health = await fetch(`${app.baseUrl}/health`);
+    assert.equal(health.status, 200);
+});

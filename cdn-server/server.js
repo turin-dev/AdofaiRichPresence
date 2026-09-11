@@ -30,15 +30,22 @@ function positiveInteger(value, fallback) {
 }
 
 function send(res, status, body, headers) {
-    if (res.writableEnded) {
+    if (res.writableEnded || res.destroyed || !res.writable) {
         return;
     }
-    res.writeHead(status, {
-        "Content-Type": "application/json",
-        "X-Content-Type-Options": "nosniff",
-        ...headers,
-    });
-    res.end(JSON.stringify(body));
+    try {
+        res.writeHead(status, {
+            "Content-Type": "application/json",
+            "X-Content-Type-Options": "nosniff",
+            ...headers,
+        });
+        res.end(JSON.stringify(body));
+    } catch (error) {
+        // The peer may disconnect between the state check and writeHead.
+        if (!res.destroyed) {
+            console.error(`response write failed: ${error.message}`);
+        }
+    }
 }
 
 function clientIp(req) {
