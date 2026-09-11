@@ -37,47 +37,50 @@ namespace AdofaiRichPresence.Core {
             snap.Mode = CaptureMode();
 
             scnGame game = SafeGet(() => scnGame.instance) ?? SafeGet(() => ADOBase.customLevel);
-            if (game != null) {
-                var data = SafeGet(() => game.levelData);
-                if (data != null) {
-                    snap.LevelName = StripTags(SafeGet(() => data.song));
-                    snap.Artist = StripTags(SafeGet(() => data.artist));
-                    snap.Author = StripTags(SafeGet(() => data.author));
-                    snap.Difficulty = SafeGet(() => data.difficulty);
+            var data = game != null ? SafeGet(() => game.levelData) : null;
+            if (data == null) {
+                // Pure editing (not test-playing) never loads scnGame; the editor
+                // scene carries its own levelData instead.
+                scnEditor editor = SafeGet(() => scnEditor.instance);
+                if (editor != null) {
+                    data = SafeGet(() => editor.levelData);
+                }
+            }
+            if (data != null) {
+                snap.LevelName = StripTags(SafeGet(() => data.song));
+                snap.Artist = StripTags(SafeGet(() => data.artist));
+                snap.Author = StripTags(SafeGet(() => data.author));
+                snap.Difficulty = SafeGet(() => data.difficulty);
 
-                    string levelPathForId = SafeGet(() => game.levelPath);
-                    if (string.IsNullOrEmpty(levelPathForId)) {
-                        levelPathForId = SafeGet(() => ADOBase.levelPath);
+                string levelPathForId = game != null ? SafeGet(() => game.levelPath) : null;
+                if (string.IsNullOrEmpty(levelPathForId)) {
+                    levelPathForId = SafeGet(() => ADOBase.levelPath);
+                }
+                if (!string.IsNullOrEmpty(levelPathForId)) {
+                    Match m = WorkshopIdPattern.Match(levelPathForId);
+                    if (m.Success) {
+                        snap.WorkshopId = m.Groups[1].Value;
                     }
-                    if (!string.IsNullOrEmpty(levelPathForId)) {
-                        Match m = WorkshopIdPattern.Match(levelPathForId);
-                        if (m.Success) {
-                            snap.WorkshopId = m.Groups[1].Value;
-                        }
-                    }
+                }
 
-                    string imageFile = SafeGet(() => data.previewImage);
-                    if (string.IsNullOrEmpty(imageFile)) {
-                        imageFile = SafeGet(() => data.previewIcon);
-                    }
-                    if (!string.IsNullOrEmpty(imageFile)) {
-                        string folder = SafeGet(() => game.levelPath);
-                        if (string.IsNullOrEmpty(folder)) {
-                            folder = SafeGet(() => ADOBase.levelPath);
-                        }
-                        if (!string.IsNullOrEmpty(folder)) {
-                            try {
-                                // levelPath points at the .adofai file itself, not its folder.
-                                if (File.Exists(folder)) {
-                                    folder = Path.GetDirectoryName(folder);
-                                }
-                                string fullPath = Path.Combine(folder ?? "", imageFile);
-                                if (File.Exists(fullPath)) {
-                                    snap.PreviewImagePath = fullPath;
-                                }
-                            } catch {
-                                // Bad path segment (custom level oddities); just skip the image.
+                string imageFile = SafeGet(() => data.previewImage);
+                if (string.IsNullOrEmpty(imageFile)) {
+                    imageFile = SafeGet(() => data.previewIcon);
+                }
+                if (!string.IsNullOrEmpty(imageFile)) {
+                    string folder = levelPathForId;
+                    if (!string.IsNullOrEmpty(folder)) {
+                        try {
+                            // levelPath points at the .adofai file itself, not its folder.
+                            if (File.Exists(folder)) {
+                                folder = Path.GetDirectoryName(folder);
                             }
+                            string fullPath = Path.Combine(folder ?? "", imageFile);
+                            if (File.Exists(fullPath)) {
+                                snap.PreviewImagePath = fullPath;
+                            }
+                        } catch {
+                            // Bad path segment (custom level oddities); just skip the image.
                         }
                     }
                 }
@@ -103,6 +106,9 @@ namespace AdofaiRichPresence.Core {
                 if (song != null) {
                     snap.ElapsedSeconds = RunFreezeState.IsFrozen ? RunFreezeState.FrozenElapsedSeconds : SafeGet(() => song.time);
                 }
+            }
+            if (snap.Bpm <= 0f && data != null) {
+                snap.Bpm = SafeGet(() => data.bpm);
             }
 
             scrController controller = SafeGet(() => scrController.instance);

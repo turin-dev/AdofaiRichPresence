@@ -93,6 +93,7 @@ namespace AdofaiRichPresence.Core {
             string details;
             string state;
             bool inLevel = snap.Mode == GameMode.Playing || snap.Mode == GameMode.Paused || snap.Mode == GameMode.Dead;
+            bool hasLevelContext = inLevel || snap.Mode == GameMode.Editor;
 
             switch (snap.Mode) {
                 case GameMode.Playing:
@@ -104,10 +105,10 @@ namespace AdofaiRichPresence.Core {
                     state = BuildStateLine(snap, settings);
                     break;
                 case GameMode.Editor:
-                    details = "레벨 에디터";
-                    state = settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.LevelName)
-                        ? Truncate(snap.LevelName, 128)
-                        : "레벨 제작 중";
+                    details = "레벨 에디터: " + (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.LevelName)
+                        ? Truncate(snap.LevelName + (string.IsNullOrEmpty(snap.Artist) ? "" : " - " + snap.Artist), 110)
+                        : "제작 중");
+                    state = BuildEditorStateLine(snap, settings);
                     break;
                 case GameMode.LevelSelect:
                     details = "레벨 선택 중";
@@ -127,7 +128,7 @@ namespace AdofaiRichPresence.Core {
             };
 
             string largeImageKey = ImageKeyFor(snap.Mode, settings);
-            if (inLevel && settings.ShowMapCoverImage) {
+            if (hasLevelContext && settings.ShowMapCoverImage) {
                 string coverUrl = imageUploader.GetUrlFor(snap.PreviewImagePath, settings.CdnUploadUrl, settings.CdnUploadSecret);
                 if (!string.IsNullOrEmpty(coverUrl)) {
                     largeImageKey = coverUrl;
@@ -143,7 +144,7 @@ namespace AdofaiRichPresence.Core {
                 };
             }
 
-            if (inLevel) {
+            if (hasLevelContext) {
                 var buttons = new System.Collections.Generic.List<Button>();
                 if (!string.IsNullOrEmpty(snap.WorkshopId)) {
                     buttons.Add(new Button {
@@ -177,6 +178,25 @@ namespace AdofaiRichPresence.Core {
                 return new Timestamps(start, end);
             }
             return new Timestamps(sessionStart);
+        }
+
+        private string BuildEditorStateLine(GameSnapshot snap, Settings settings) {
+            var parts = new System.Collections.Generic.List<string>();
+
+            if (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.Author)) {
+                parts.Add("제작: " + snap.Author);
+            }
+            if (settings.ShowRemainingTiles && snap.TotalTiles > 0) {
+                parts.Add(snap.TotalTiles + " 타일");
+            }
+            if (settings.ShowDifficulty && snap.Difficulty > 0) {
+                parts.Add("난이도 " + snap.Difficulty + "/10");
+            }
+            if (settings.ShowBpm && snap.Bpm > 0) {
+                parts.Add(Math.Round(snap.Bpm) + " BPM");
+            }
+
+            return Truncate(string.Join("  |  ", parts.ToArray()), 128);
         }
 
         private string BuildStateLine(GameSnapshot snap, Settings settings) {
