@@ -1,0 +1,28 @@
+cdn-server/deploy-dokploy.sh
+  s_c27074af772a52::t_e6832f7e33341e 17
+Dockerfile
+  s_c27074af772a52::t_e6832f7e33341e 1-20
+.dockerignore
+  s_c27074af772a52::t_e6832f7e33341e 1-10
+README.md
+  s_c27074af772a52::t_e6832f7e33341e 71-75
+cdn-server/README.md
+  s_c27074af772a52::t_e6832f7e33341e 63-69
+  s_c27074af772a52::t_f3df963a058adb 62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fb7bb87d5d07143433cdee67d9822af43a27ee17",
+  "prompts": {},
+  "sessions": {
+    "s_c27074af772a52": {
+      "agent_id": {
+        "tool": "Codex",
+        "id": "01a090b0-040b-77f0-92ac-a19b5d10be8b",
+        "model": "gpt-5"
+      },
+      "human_author": "turin-dev <me@turin.my>"
+    }
+  }
+}
