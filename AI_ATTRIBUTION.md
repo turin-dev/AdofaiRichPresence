@@ -30,3 +30,5 @@ The repository owner remains responsible for reviewing, testing, and shipping
 the resulting code. This file is a human-readable supplement; Git AI's notes
 and `git ai blame` are the machine-readable attribution record for tracked
 changes.
+
+The attribution record is checked alongside the normal build and test checks.
