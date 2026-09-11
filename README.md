@@ -23,6 +23,7 @@ Env vars (all optional):
 
 - `POST /upload` — body is the raw image bytes, `Content-Type: image/png|image/jpeg|image/webp`. Returns `{ "url": "https://cdn.adofai.turin.my/i/<sha256>.<ext>" }`. Same image content always returns the same URL (content-addressed, so re-uploads just refresh the TTL instead of duplicating storage). Rate-limited per IP; over the limit returns `429`.
 - `GET /i/<hash>.<ext>` — serves the stored image. Images older than 2 hours since their last upload are deleted (checked both lazily on read and via a background sweep every 10 minutes) and return `404`.
+- `GET /health` — `{ "ok": true, "storedImages": <count>, "uptimeSeconds": <n> }`, for uptime monitoring.
 
 ## Deploying on your VPS
 

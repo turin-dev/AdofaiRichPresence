@@ -140,6 +140,11 @@ function handleServe(req, res, filename) {
 }
 
 const server = http.createServer((req, res) => {
+    if (req.method === "GET" && req.url === "/health") {
+        const count = fs.readdirSync(STORAGE_DIR).length;
+        send(res, 200, { ok: true, storedImages: count, uptimeSeconds: Math.floor(process.uptime()) });
+        return;
+    }
     if (req.method === "POST" && req.url === "/upload") {
         handleUpload(req, res);
         return;
