@@ -1,0 +1,19 @@
+.github/workflows/cdn-server.yml
+  s_c27074af772a52::t_98edbe4be66f1c 7-15,41-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cc53a6654a68ebf7c1537588a19e6947b6566ba4",
+  "prompts": {},
+  "sessions": {
+    "s_c27074af772a52": {
+      "agent_id": {
+        "tool": "Codex",
+        "id": "01a090b0-040b-77f0-92ac-a19b5d10be8b",
+        "model": "gpt-5"
+      },
+      "human_author": "turin-dev <me@turin.my>"
+    }
+  }
+}
