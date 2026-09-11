@@ -59,3 +59,11 @@ signature matches the declared content type. The upload size limit is 8MB.
    WantedBy=multi-user.target
    ```
    Then `systemctl enable --now adofai-cdn-server`.
+
+## Deploying from the merged repository
+
+When Dokploy clones `turin-dev/AdofaiRichPresence` and uses the repository root
+as the Docker build context, leave the Dockerfile path at the root default. The
+root `Dockerfile` copies this service from `cdn-server/` and exposes port `8787`.
+If you configure `cdn-server/` as the build context instead, select this folder's
+`Dockerfile` and keep the same exposed port.

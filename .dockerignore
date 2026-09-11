@@ -1,0 +1,10 @@
+.git
+.github
+bin
+obj
+artifacts
+release-*
+**/node_modules
+**/storage
+**/.env
+*.zip

@@ -14,7 +14,7 @@ curl -s -X POST "$DOKPLOY_URL/api/application.create" \
 
 echo
 echo "Copy the returned applicationId, then:"
-echo '  1. In the Dokploy UI, point this application at this cdn-server/ folder (git repo or manual upload), build command "node server.js" or a Dockerfile.'
+echo '  1. In the Dokploy UI, use the AdofaiRichPresence repository root as the build context. The root Dockerfile starts cdn-server/ automatically. Alternatively set the build context to cdn-server/ and select cdn-server/Dockerfile.'
 echo "  2. Set the domain to cdn.adofai.turin.my with HTTPS enabled."
 echo "  3. Optionally set env vars RATE_LIMIT_MAX / RATE_LIMIT_WINDOW_MS / STORAGE_DIR."
 echo "  4. Trigger the deploy:"

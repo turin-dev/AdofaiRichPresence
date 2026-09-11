@@ -68,3 +68,8 @@ to avoid the two fighting over the same Discord connection.
 The optional upload service is included in this repository under `cdn-server/`.
 Its own `README.md` documents deployment, upload authentication, proxy handling,
 and the health endpoint. Run its tests from that directory with `npm test`.
+
+For Dokploy or another Docker deployment that uses the repository root as its
+build context, use the root `Dockerfile`. It starts the CDN service from
+`cdn-server/` and listens on port `8787`. If the deployment context is set to
+`cdn-server/` instead, use `cdn-server/Dockerfile`.
