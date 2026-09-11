@@ -1,0 +1,21 @@
+Settings.cs
+  s_c27074af772a52::t_09d4cbb4969e3e 236-239,306-308
+Core/PresenceManager.cs
+  s_c27074af772a52::t_09d4cbb4969e3e 364-371
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ca347537182a709d929cc7d3a5503ced16765c58",
+  "prompts": {},
+  "sessions": {
+    "s_c27074af772a52": {
+      "agent_id": {
+        "tool": "Codex",
+        "id": "01a090b0-040b-77f0-92ac-a19b5d10be8b",
+        "model": "gpt-5"
+      },
+      "human_author": "turin-dev <me@turin.my>"
+    }
+  }
+}
