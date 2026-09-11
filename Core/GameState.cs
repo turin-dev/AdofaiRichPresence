@@ -75,12 +75,20 @@ namespace AdofaiRichPresence.Core {
                     string folder = levelPathForId;
                     if (!string.IsNullOrEmpty(folder)) {
                         try {
-                            // levelPath points at the .adofai file itself, not its folder.
                             if (File.Exists(folder)) {
-                                folder = Path.GetDirectoryName(folder);
+                                folder = Path.GetDirectoryName(Path.GetFullPath(folder));
+                            } else if (Directory.Exists(folder)) {
+                                folder = Path.GetFullPath(folder);
+                            } else {
+                                // levelPath normally points at the .adofai file. Use its
+                                // parent even when the file is temporarily unavailable.
+                                folder = Path.GetDirectoryName(Path.GetFullPath(folder));
                             }
-                            string fullPath = Path.Combine(folder ?? "", imageFile);
-                            if (File.Exists(fullPath)) {
+                            string baseFolder = EnsureTrailingSeparator(folder);
+                            string fullPath = Path.GetFullPath(Path.Combine(folder ?? "", imageFile));
+                            bool insideLevelFolder = !string.IsNullOrEmpty(baseFolder)
+                                && fullPath.StartsWith(baseFolder, StringComparison.OrdinalIgnoreCase);
+                            if (insideLevelFolder && IsSupportedImagePath(fullPath) && File.Exists(fullPath)) {
                                 snap.PreviewImagePath = fullPath;
                             }
                         } catch {
@@ -245,6 +253,22 @@ namespace AdofaiRichPresence.Core {
                 return "";
             }
             return TagPattern.Replace(s, "").Trim();
+        }
+
+        private static bool IsSupportedImagePath(string path) {
+            string lower = path.ToLowerInvariant();
+            return lower.EndsWith(".png") || lower.EndsWith(".jpg")
+                || lower.EndsWith(".jpeg") || lower.EndsWith(".webp");
+        }
+
+        private static string EnsureTrailingSeparator(string path) {
+            if (string.IsNullOrEmpty(path)) {
+                return "";
+            }
+            string separator = Path.DirectorySeparatorChar.ToString();
+            return path.EndsWith(separator, StringComparison.Ordinal)
+                ? path
+                : path + separator;
         }
 
         private static T SafeGet<T>(Func<T> getter) {

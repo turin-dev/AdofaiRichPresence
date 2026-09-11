@@ -121,5 +121,19 @@ namespace AdofaiRichPresence.Core {
         internal static bool PauseMenuOpen;
         internal static UnityModManager.ModEntry.ModLogger Logger;
         internal static bool DebugLogging;
+
+        internal static void Reset() {
+            IsFrozen = false;
+            FrozenElapsedSeconds = 0f;
+            IsCleared = false;
+            FrozenAccuracy = 1f;
+            FrozenXAccuracy = 1f;
+            FrozenPerfectCount = 0;
+            FrozenEarlyCount = 0;
+            FrozenLateCount = 0;
+            PauseMenuOpen = false;
+            Logger = null;
+            DebugLogging = false;
+        }
     }
 }

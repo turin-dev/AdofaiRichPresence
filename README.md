@@ -28,14 +28,21 @@ run `dotnet build`.
 
 ## Setup (one-time, in-game)
 
-1. Create a Discord Application at https://discord.com/developers/applications
-   (just needs a name — no secrets required).
-2. Copy its **Application ID**.
-3. In-game, open the Unity Mod Manager window (default: Ctrl+F10), go to
-   **ADOFAI Rich Presence**, and paste the ID into the settings panel.
-4. (Optional) Upload images under **Rich Presence → Art Assets** on the Discord
-   Application page, and enter their asset key names into the mod's image key
-   fields, to show custom artwork instead of no image.
+1. In-game, open the Unity Mod Manager window (default: Ctrl+F10) and select
+   **ADOFAI Rich Presence**. The mod includes a default Discord Application ID,
+   so the presence should work without creating an app first.
+2. (Optional) To use your own Discord application, create one at
+   https://discord.com/developers/applications, copy its **Application ID**, and
+   paste it into the **Discord 연결** tab.
+3. (Optional) Upload images under **Rich Presence → Art Assets** on the Discord
+   Application page, then enter the exact asset key names in the **이미지** tab.
+4. After changing settings, press Unity Mod Manager's **Save** button so the
+   changes are persisted.
+
+The **Discord 연결** tab shows the current connection state and includes a
+**Discord 다시 연결** button for recovering after Discord starts or restarts.
+The **표시 정보** tab includes an example preview so you can check the two
+Discord text lines and their 128-character limits before starting a level.
 
 ## What it shows
 

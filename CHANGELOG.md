@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add a live example preview to the settings panel, including Discord's 128-character field limits
+- Add Discord connection status and a manual reconnect action to the settings panel
+- Add safe Discord toggle lifecycle, connection retry backoff, and CDN upload validation/cleanup
+
 ## 1.1.0
 
 - Auto-upload each workshop level's cover image to a CDN and use it as the Discord large image

@@ -10,7 +10,7 @@ namespace AdofaiRichPresence {
 
         public static bool Load(UnityModManager.ModEntry modEntry) {
             settings = Settings.Load<Settings>(modEntry);
-            if (string.IsNullOrEmpty(settings.DiscordApplicationId)) {
+            if (settings.EnableDiscord && string.IsNullOrEmpty(settings.DiscordApplicationId)) {
                 settings.DiscordApplicationId = DiscordConfig.DefaultApplicationId;
             }
             presenceManager = new PresenceManager(modEntry.Logger);
@@ -18,6 +18,7 @@ namespace AdofaiRichPresence {
             harmony = new Harmony(modEntry.Info.Id);
             harmony.PatchAll();
             MuteBuiltInPresencePatch.Settings = settings;
+            RunFreezeState.Reset();
             RunFreezeState.Logger = modEntry.Logger;
 
             modEntry.OnToggle = OnToggle;
@@ -30,11 +31,15 @@ namespace AdofaiRichPresence {
         }
 
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool enabled) {
+            MuteBuiltInPresencePatch.Settings = enabled ? settings : null;
+            if (!enabled) {
+                presenceManager?.Stop();
+            }
             return true;
         }
 
         private static void OnGUI(UnityModManager.ModEntry modEntry) {
-            settings.Draw(modEntry);
+            settings.Draw(modEntry, presenceManager);
         }
 
         private static void OnSaveGUI(UnityModManager.ModEntry modEntry) {
@@ -50,8 +55,10 @@ namespace AdofaiRichPresence {
         }
 
         private static bool OnUnload(UnityModManager.ModEntry modEntry) {
-            presenceManager.Dispose();
+            MuteBuiltInPresencePatch.Settings = null;
+            presenceManager?.Stop();
             harmony.UnpatchAll(modEntry.Info.Id);
+            RunFreezeState.Reset();
             return true;
         }
     }
