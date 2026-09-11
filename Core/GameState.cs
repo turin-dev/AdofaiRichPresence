@@ -36,6 +36,8 @@ namespace AdofaiRichPresence.Core {
     }
 
     internal static class GameState {
+        private const float MaxPresenceDurationSeconds = 7f * 24f * 60f * 60f;
+
         internal static GameSnapshot Capture() {
             GameSnapshot snap = new GameSnapshot();
             snap.Mode = CaptureMode();
@@ -175,7 +177,7 @@ namespace AdofaiRichPresence.Core {
             // transitions. Keep invalid values out of Discord text and timestamps.
             snap.Bpm = NormalizePositive(snap.Bpm, 0f);
             snap.ElapsedSeconds = NormalizeNonNegative(snap.ElapsedSeconds, 0f);
-            snap.TotalSeconds = NormalizePositive(snap.TotalSeconds, 0f);
+            snap.TotalSeconds = NormalizePositiveDuration(snap.TotalSeconds, 0f);
 
             return snap;
         }
@@ -262,11 +264,15 @@ namespace AdofaiRichPresence.Core {
             return IsFinitePositive(value) ? value : fallback;
         }
 
+        private static float NormalizePositiveDuration(float value, float fallback) {
+            return IsFinitePositive(value) ? Math.Min(value, MaxPresenceDurationSeconds) : fallback;
+        }
+
         private static float NormalizeNonNegative(float value, float fallback) {
             if (float.IsNaN(value) || float.IsInfinity(value) || value < 0f) {
                 return fallback;
             }
-            return value;
+            return Math.Min(value, MaxPresenceDurationSeconds);
         }
 
         private static readonly Regex WorkshopIdPattern = new Regex(@"workshop[\\/]content[\\/]977950[\\/](\d+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
