@@ -119,6 +119,22 @@ namespace AdofaiRichPresence.Core {
                     snap.Accuracy = NanToOne(SafeGet(() => mistakes.percentAcc));
                     snap.XAccuracy = NanToOne(SafeGet(() => mistakes.percentXAcc));
                 }
+
+                // ADOFAI levels routinely change tempo mid-level; the current tile's
+                // actual BPM comes from consecutive floors' entry times, not the
+                // level's starting BPM.
+                scrFloor currFloor = SafeGet(() => controller.currFloor) ?? SafeGet(() => controller.firstFloor);
+                scrFloor nextFloor = currFloor != null ? SafeGet(() => currFloor.nextfloor) : null;
+                if (currFloor != null && nextFloor != null) {
+                    double dt = SafeGet(() => nextFloor.entryTime) - SafeGet(() => currFloor.entryTime);
+                    if (dt > 1e-9) {
+                        float pitch = conductor != null ? SafeGet(() => conductor.song)?.pitch ?? 1f : 1f;
+                        float liveBpm = (float)(60.0 / dt * pitch);
+                        if (liveBpm > 0f) {
+                            snap.Bpm = liveBpm;
+                        }
+                    }
+                }
             }
 
             scrLevelMaker lm = SafeGet(() => scrLevelMaker.instance);
