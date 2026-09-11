@@ -41,15 +41,38 @@ namespace AdofaiRichPresence.Core {
                         var mistakes = controller?.mistakesManager;
                         RunFreezeState.FrozenAccuracy = mistakes != null && !float.IsNaN(mistakes.percentAcc) ? mistakes.percentAcc : 1f;
                         RunFreezeState.FrozenXAccuracy = mistakes != null && !float.IsNaN(mistakes.percentXAcc) ? mistakes.percentXAcc : 1f;
+
+                        var tracker = scrMistakesManager.marginTrackers != null && scrMistakesManager.marginTrackers.Length > 0
+                            ? scrMistakesManager.marginTrackers[0]
+                            : null;
+                        int[] counts = tracker?.hitMarginsCount;
+                        if (counts != null) {
+                            // HitMargin enum order: TooEarly, VeryEarly, EarlyPerfect, Perfect,
+                            // LatePerfect, VeryLate, TooLate, Multipress, FailMiss, FailOverload, Auto, OverPress.
+                            RunFreezeState.FrozenPerfectCount = SumSafe(counts, 3);
+                            RunFreezeState.FrozenEarlyCount = SumSafe(counts, 0) + SumSafe(counts, 1) + SumSafe(counts, 2);
+                            RunFreezeState.FrozenLateCount = SumSafe(counts, 4) + SumSafe(counts, 5) + SumSafe(counts, 6);
+                        } else {
+                            RunFreezeState.FrozenPerfectCount = 0;
+                            RunFreezeState.FrozenEarlyCount = 0;
+                            RunFreezeState.FrozenLateCount = 0;
+                        }
                     } catch {
                         RunFreezeState.FrozenAccuracy = 1f;
                         RunFreezeState.FrozenXAccuracy = 1f;
+                        RunFreezeState.FrozenPerfectCount = 0;
+                        RunFreezeState.FrozenEarlyCount = 0;
+                        RunFreezeState.FrozenLateCount = 0;
                     }
                 }
             } else if (state == States.Start || state == States.Countdown || state == States.PlayerControl) {
                 RunFreezeState.IsFrozen = false;
                 RunFreezeState.IsCleared = false;
             }
+        }
+
+        private static int SumSafe(int[] array, int index) {
+            return index >= 0 && index < array.Length ? array[index] : 0;
         }
     }
 
@@ -92,6 +115,9 @@ namespace AdofaiRichPresence.Core {
         internal static bool IsCleared;
         internal static float FrozenAccuracy;
         internal static float FrozenXAccuracy;
+        internal static int FrozenPerfectCount;
+        internal static int FrozenEarlyCount;
+        internal static int FrozenLateCount;
         internal static bool PauseMenuOpen;
         internal static UnityModManager.ModEntry.ModLogger Logger;
         internal static bool DebugLogging;

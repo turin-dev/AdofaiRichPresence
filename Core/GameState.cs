@@ -30,6 +30,9 @@ namespace AdofaiRichPresence.Core {
         public string WorkshopId;
         public float Accuracy;
         public float XAccuracy;
+        public int PerfectCount;
+        public int EarlyCount;
+        public int LateCount;
     }
 
     internal static class GameState {
@@ -118,6 +121,9 @@ namespace AdofaiRichPresence.Core {
                 if (RunFreezeState.IsCleared) {
                     snap.Accuracy = RunFreezeState.FrozenAccuracy;
                     snap.XAccuracy = RunFreezeState.FrozenXAccuracy;
+                    snap.PerfectCount = RunFreezeState.FrozenPerfectCount;
+                    snap.EarlyCount = RunFreezeState.FrozenEarlyCount;
+                    snap.LateCount = RunFreezeState.FrozenLateCount;
                 } else {
                     var mistakes = SafeGet(() => controller.mistakesManager);
                     if (mistakes != null) {

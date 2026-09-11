@@ -199,6 +199,7 @@ namespace AdofaiRichPresence.Core {
             if (settings.ShowXAccuracy) {
                 parts.Add("X-정확도 " + (snap.XAccuracy * 100f).ToString("0.00") + "%");
             }
+            parts.Add("정확 " + snap.PerfectCount + "  빠름 " + snap.EarlyCount + "  느림 " + snap.LateCount);
             if (settings.ShowDifficulty && snap.Difficulty > 0) {
                 parts.Add("난이도 " + snap.Difficulty + "/10");
             }
