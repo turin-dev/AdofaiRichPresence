@@ -119,7 +119,7 @@ namespace AdofaiRichPresence.Core {
                     snap.ElapsedSeconds = RunFreezeState.IsFrozen ? RunFreezeState.FrozenElapsedSeconds : SafeGet(() => song.time);
                 }
             }
-            if (snap.Bpm <= 0f && data != null) {
+            if (!IsFinitePositive(snap.Bpm) && data != null) {
                 snap.Bpm = SafeGet(() => data.bpm);
             }
 
@@ -150,7 +150,7 @@ namespace AdofaiRichPresence.Core {
                     if (dt > 1e-9) {
                         float pitch = conductor != null ? SafeGet(() => conductor.song)?.pitch ?? 1f : 1f;
                         float liveBpm = (float)(60.0 / dt * pitch);
-                        if (liveBpm > 0f) {
+                        if (IsFinitePositive(liveBpm)) {
                             snap.Bpm = liveBpm;
                         }
                     }
@@ -170,6 +170,12 @@ namespace AdofaiRichPresence.Core {
                     }
                 }
             }
+
+            // Unity/audio values can briefly become NaN or Infinity during scene
+            // transitions. Keep invalid values out of Discord text and timestamps.
+            snap.Bpm = NormalizePositive(snap.Bpm, 0f);
+            snap.ElapsedSeconds = NormalizeNonNegative(snap.ElapsedSeconds, 0f);
+            snap.TotalSeconds = NormalizePositive(snap.TotalSeconds, 0f);
 
             return snap;
         }
@@ -246,6 +252,21 @@ namespace AdofaiRichPresence.Core {
                 return fallback;
             }
             return Math.Max(0f, Math.Min(1f, value));
+        }
+
+        private static bool IsFinitePositive(float value) {
+            return !float.IsNaN(value) && !float.IsInfinity(value) && value > 0f;
+        }
+
+        private static float NormalizePositive(float value, float fallback) {
+            return IsFinitePositive(value) ? value : fallback;
+        }
+
+        private static float NormalizeNonNegative(float value, float fallback) {
+            if (float.IsNaN(value) || float.IsInfinity(value) || value < 0f) {
+                return fallback;
+            }
+            return value;
         }
 
         private static readonly Regex WorkshopIdPattern = new Regex(@"workshop[\\/]content[\\/]977950[\\/](\d+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
