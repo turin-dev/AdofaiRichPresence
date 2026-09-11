@@ -23,6 +23,7 @@ namespace AdofaiRichPresence.Core {
 
         private const long MaxImageBytes = 8 * 1024 * 1024;
         private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(30);
+        private const int RequestTimeoutSeconds = 30;
 
         internal LevelImageUploader(UnityModManager.ModEntry.ModLogger logger) {
             this.logger = logger;
@@ -129,6 +130,7 @@ namespace AdofaiRichPresence.Core {
                 req = new UnityWebRequest(uploadUrl, "POST") {
                     uploadHandler = new UploadHandlerRaw(bytes) { contentType = mime },
                     downloadHandler = new DownloadHandlerBuffer(),
+                    timeout = RequestTimeoutSeconds,
                 };
                 if (!string.IsNullOrEmpty(uploadSecret)) {
                     req.SetRequestHeader("Authorization", "Bearer " + uploadSecret);

@@ -55,7 +55,8 @@ namespace AdofaiRichPresence {
             GUILayout.Space(8);
 
             selectedTab = Mathf.Clamp(selectedTab, 0, TabNames.Length - 1);
-            selectedTab = GUILayout.Toolbar(selectedTab, TabNames, GUILayout.Width(600));
+            float tabWidth = Mathf.Clamp(Screen.width - 40f, 360f, 600f);
+            selectedTab = GUILayout.Toolbar(selectedTab, TabNames, GUILayout.Width(tabWidth));
             GUILayout.Space(10);
 
             switch (selectedTab) {
