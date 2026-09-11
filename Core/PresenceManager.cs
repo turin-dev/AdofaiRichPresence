@@ -152,11 +152,15 @@ namespace AdofaiRichPresence.Core {
                         Url = "https://steamcommunity.com/sharedfiles/filedetails/?id=" + snap.WorkshopId,
                     });
                 }
-                buttons.Add(new Button {
-                    Label = "이 모드 받기",
-                    Url = "https://github.com/turin-dev/AdofaiRichPresence",
-                });
-                presence.Buttons = buttons.ToArray();
+                if (settings.ShowModDownloadButton) {
+                    buttons.Add(new Button {
+                        Label = "이 모드 받기",
+                        Url = "https://github.com/turin-dev/AdofaiRichPresence",
+                    });
+                }
+                if (buttons.Count > 0) {
+                    presence.Buttons = buttons.ToArray();
+                }
             }
 
             if (inLevel && settings.ShowProgress && snap.TotalTiles > 0) {
