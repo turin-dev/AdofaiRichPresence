@@ -198,13 +198,22 @@ namespace AdofaiRichPresence.Core {
                     logger?.Warning("Discord 상태 정리 실패: " + e.Message);
                 }
             }
-            client.Dispose();
-            client = null;
-            connectedApplicationId = null;
-            connectionReady = false;
-            connectionFailed = false;
-            lastSentMode = (GameMode)(-1);
-            timeSinceLastUpdate = 0f;
+            try {
+                client.Dispose();
+            } catch (Exception e) {
+                if (debugLoggingEnabled) {
+                    logger?.Warning("Discord 클라이언트 정리 실패: " + e.Message);
+                }
+            } finally {
+                // A broken client must never remain reachable after cleanup. This
+                // path is used by both manual reconnect and the mod disable toggle.
+                client = null;
+                connectedApplicationId = null;
+                connectionReady = false;
+                connectionFailed = false;
+                lastSentMode = (GameMode)(-1);
+                timeSinceLastUpdate = 0f;
+            }
         }
 
         private RichPresence BuildPresence(GameSnapshot snap, Settings settings) {
