@@ -9,7 +9,8 @@ COPY cdn-server/server.js cdn-server/package.json ./
 RUN mkdir -p /app/storage && chown -R node:node /app
 USER node
 
-ENV PORT=8787
+ENV NODE_ENV=production \
+    PORT=8787
 EXPOSE 8787
 
 VOLUME ["/app/storage"]

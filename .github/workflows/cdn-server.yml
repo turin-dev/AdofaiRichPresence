@@ -5,6 +5,13 @@ on:
     paths:
       - 'cdn-server/**'
       - '.github/workflows/cdn-server.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cdn-server-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
   pull_request:
     paths:
       - 'cdn-server/**'
@@ -23,6 +30,9 @@ jobs:
           node-version: 22
       - run: node --check server.js
       - run: npm test
+      - name: Build root Docker image
+        working-directory: .
+        run: docker build --tag adofai-cdn-server:ci .
       - name: Smoke test
         run: |
           UPLOAD_SECRET=ci node server.js &

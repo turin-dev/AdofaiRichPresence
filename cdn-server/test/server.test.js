@@ -96,10 +96,12 @@ test("accepts a real image, ignores query strings, and does not rate-limit inval
     const image = await fetch(result.url);
     assert.equal(image.status, 200);
     assert.equal(image.headers.get("content-type"), "image/png");
+    assert.equal(image.headers.get("x-content-type-options"), "nosniff");
     assert.deepEqual(Buffer.from(await image.arrayBuffer()), png);
 
     const health = await fetch(`${app.baseUrl}/health?details=1`);
     assert.equal(health.status, 200);
+    assert.equal(health.headers.get("x-content-type-options"), "nosniff");
     assert.equal((await health.json()).storedImages, 1);
 });
 
