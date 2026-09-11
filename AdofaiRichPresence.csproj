@@ -25,7 +25,7 @@
   <ItemGroup>
     <!-- Discord RPC client only; Harmony comes from Unity Mod Manager's own 0Harmony.dll below
          so the mod always matches the version UMM loads at runtime. -->
-    <PackageReference Include="DiscordRichPresence" Version="1.2.1.24" />
+    <PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +55,10 @@
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(AdofaiManaged)\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>$(AdofaiManaged)\UnityEngine.UnityWebRequestModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="RDTools">
