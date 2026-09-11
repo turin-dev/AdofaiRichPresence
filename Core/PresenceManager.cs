@@ -143,13 +143,19 @@ namespace AdofaiRichPresence.Core {
                 };
             }
 
-            if (inLevel && !string.IsNullOrEmpty(snap.WorkshopId)) {
-                presence.Buttons = new[] {
-                    new Button {
+            if (inLevel) {
+                var buttons = new System.Collections.Generic.List<Button>();
+                if (!string.IsNullOrEmpty(snap.WorkshopId)) {
+                    buttons.Add(new Button {
                         Label = "워크샵에서 보기",
                         Url = "https://steamcommunity.com/sharedfiles/filedetails/?id=" + snap.WorkshopId,
-                    },
-                };
+                    });
+                }
+                buttons.Add(new Button {
+                    Label = "이 모드 받기",
+                    Url = "https://github.com/turin-dev/AdofaiRichPresence",
+                });
+                presence.Buttons = buttons.ToArray();
             }
 
             if (inLevel && settings.ShowProgress && snap.TotalTiles > 0) {
