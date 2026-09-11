@@ -123,7 +123,7 @@ namespace AdofaiRichPresence.Core {
             RichPresence presence = new RichPresence {
                 Details = string.IsNullOrEmpty(details) ? null : details,
                 State = string.IsNullOrEmpty(state) ? null : state,
-                Timestamps = BuildTimestamps(snap, inLevel),
+                Timestamps = BuildTimestamps(snap, snap.Mode == GameMode.Playing),
                 Type = settings.ShowAsListening ? ActivityType.Listening : ActivityType.Playing,
             };
 
