@@ -202,11 +202,18 @@ namespace AdofaiRichPresence.Core {
         private string BuildStateLine(GameSnapshot snap, Settings settings) {
             var parts = new System.Collections.Generic.List<string>();
 
-            if (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.Author)) {
-                parts.Add("제작: " + snap.Author);
+            // Ordered so that if the line has to be truncated, the most
+            // time-sensitive info survives and static/flavor info drops first.
+            if (settings.ShowModeState && snap.Mode == GameMode.Dead) {
+                parts.Add("죽음");
+            } else if (settings.ShowModeState && snap.Mode == GameMode.Paused) {
+                parts.Add("일시정지");
             }
             if (settings.ShowProgress) {
                 parts.Add((snap.Progress * 100f).ToString("0.0") + "%");
+            }
+            if (settings.ShowRemainingTiles && snap.TotalTiles > 0) {
+                parts.Add("남은 " + snap.RemainingTiles + "/" + snap.TotalTiles + " 타일");
             }
             if (settings.ShowAccuracy) {
                 parts.Add("정확도 " + (snap.Accuracy * 100f).ToString("0.0") + "%");
@@ -214,22 +221,17 @@ namespace AdofaiRichPresence.Core {
             if (settings.ShowXAccuracy) {
                 parts.Add("X-정확도 " + (snap.XAccuracy * 100f).ToString("0.0") + "%");
             }
-            if (settings.ShowRemainingTiles && snap.TotalTiles > 0) {
-                parts.Add("남은 " + snap.RemainingTiles + "/" + snap.TotalTiles + " 타일");
-            }
-            if (settings.ShowDifficulty && snap.Difficulty > 0) {
-                parts.Add("난이도 " + snap.Difficulty + "/10");
-            }
             if (settings.ShowBpm && snap.Bpm > 0) {
                 parts.Add(Math.Round(snap.Bpm) + " BPM");
             }
             if (settings.ShowElapsedTime && snap.TotalSeconds > 0 && !settings.ShowAsListening) {
                 parts.Add(FormatTime(snap.ElapsedSeconds) + " / " + FormatTime(snap.TotalSeconds));
             }
-            if (settings.ShowModeState && snap.Mode == GameMode.Dead) {
-                parts.Add("죽음");
-            } else if (settings.ShowModeState && snap.Mode == GameMode.Paused) {
-                parts.Add("일시정지");
+            if (settings.ShowDifficulty && snap.Difficulty > 0) {
+                parts.Add("난이도 " + snap.Difficulty + "/10");
+            }
+            if (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.Author)) {
+                parts.Add("제작: " + snap.Author);
             }
 
             return Truncate(string.Join("  |  ", parts.ToArray()), 128);

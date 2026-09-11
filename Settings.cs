@@ -72,6 +72,22 @@ namespace AdofaiRichPresence {
         private void DrawDisplayTab() {
             GUILayout.Label("Discord 상태 메시지에 표시할 정보를 고르세요.");
             GUILayout.Space(5);
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("전체 켜기", GUILayout.Width(100))) {
+                ShowLevelAndArtist = ShowProgress = ShowAccuracy = ShowRemainingTiles =
+                    ShowDifficulty = ShowBpm = ShowElapsedTime = ShowModeState = true;
+            }
+            if (GUILayout.Button("간단히 (진행률만)", GUILayout.Width(140))) {
+                ShowLevelAndArtist = true;
+                ShowProgress = true;
+                ShowAccuracy = ShowXAccuracy = ShowRemainingTiles =
+                    ShowDifficulty = ShowBpm = ShowElapsedTime = false;
+                ShowModeState = true;
+            }
+            GUILayout.EndHorizontal();
+            GUILayout.Space(10);
+
             ShowLevelAndArtist = GUILayout.Toggle(ShowLevelAndArtist, " 레벨/곡 이름 & 아티스트 & 제작자");
             ShowProgress = GUILayout.Toggle(ShowProgress, " 진행률 (%)");
             ShowAccuracy = GUILayout.Toggle(ShowAccuracy, " 정확도 (%)");
