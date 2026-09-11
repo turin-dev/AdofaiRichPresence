@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --check server.js
+      - run: npm test
+      - name: Smoke test
+        run: |
+          UPLOAD_SECRET=ci node server.js &
+          sleep 1
+          curl -sf http://localhost:8787/health
+          node -e "process.stdout.write(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64'))" > /tmp/ci.png
+          curl -sf -X POST http://localhost:8787/upload -H "Authorization: Bearer ci" -H "Content-Type: image/png" --data-binary @/tmp/ci.png
