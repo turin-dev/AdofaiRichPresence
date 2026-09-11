@@ -191,6 +191,9 @@ namespace AdofaiRichPresence.Core {
             if (settings.ShowAccuracy) {
                 parts.Add("정확도 " + (snap.Accuracy * 100f).ToString("0.0") + "%");
             }
+            if (settings.ShowXAccuracy) {
+                parts.Add("X-정확도 " + (snap.XAccuracy * 100f).ToString("0.0") + "%");
+            }
             if (settings.ShowRemainingTiles && snap.TotalTiles > 0) {
                 parts.Add("남은 " + snap.RemainingTiles + "/" + snap.TotalTiles + " 타일");
             }

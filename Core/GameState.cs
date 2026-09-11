@@ -28,6 +28,7 @@ namespace AdofaiRichPresence.Core {
         public string PreviewImagePath;
         public string WorkshopId;
         public float Accuracy;
+        public float XAccuracy;
     }
 
     internal static class GameState {
@@ -110,6 +111,7 @@ namespace AdofaiRichPresence.Core {
                 var mistakes = SafeGet(() => controller.mistakesManager);
                 if (mistakes != null) {
                     snap.Accuracy = SafeGet(() => mistakes.percentAcc);
+                    snap.XAccuracy = SafeGet(() => mistakes.percentXAcc);
                 }
             }
 
