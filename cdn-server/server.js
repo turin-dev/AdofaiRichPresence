@@ -88,6 +88,16 @@ function listImageEntries() {
     }
 }
 
+function isStorageAvailable() {
+    try {
+        fs.accessSync(STORAGE_DIR, fs.constants.R_OK | fs.constants.W_OK);
+        return true;
+    } catch (error) {
+        console.error(`storage access failed: ${error.message}`);
+        return false;
+    }
+}
+
 function sweepExpired() {
     let removed = 0;
     const entries = listImageEntries();
@@ -237,6 +247,10 @@ const server = http.createServer((req, res) => {
     }
 
     if (req.method === "GET" && url.pathname === "/health") {
+        if (!isStorageAvailable()) {
+            send(res, 503, { ok: false, error: "storage unavailable" });
+            return;
+        }
         const entries = listImageEntries();
         if (!entries) {
             send(res, 503, { ok: false, error: "storage unavailable" });
@@ -256,6 +270,12 @@ const server = http.createServer((req, res) => {
     }
     send(res, 404, { error: "not found" });
 });
+
+// Prevent disconnected or deliberately slow clients from occupying an upload
+// connection indefinitely. The body size limit remains the primary protection.
+server.requestTimeout = 30 * 1000;
+server.headersTimeout = 10 * 1000;
+server.keepAliveTimeout = 5 * 1000;
 
 const sweepTimer = setInterval(sweepExpired, SWEEP_INTERVAL_MS);
 const rateLimitTimer = setInterval(cleanupRateLimitHits, RATE_LIMIT_WINDOW_MS);
