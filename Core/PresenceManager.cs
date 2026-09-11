@@ -188,6 +188,9 @@ namespace AdofaiRichPresence.Core {
             if (settings.ShowProgress) {
                 parts.Add((snap.Progress * 100f).ToString("0.0") + "%");
             }
+            if (settings.ShowAccuracy) {
+                parts.Add("정확도 " + (snap.Accuracy * 100f).ToString("0.0") + "%");
+            }
             if (settings.ShowRemainingTiles && snap.TotalTiles > 0) {
                 parts.Add("남은 " + snap.RemainingTiles + "/" + snap.TotalTiles + " 타일");
             }

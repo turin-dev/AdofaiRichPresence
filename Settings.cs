@@ -5,6 +5,7 @@ namespace AdofaiRichPresence {
     public class Settings : UnityModManager.ModSettings {
         public bool ShowLevelAndArtist = true;
         public bool ShowProgress = true;
+        public bool ShowAccuracy = true;
         public bool ShowRemainingTiles = true;
         public bool ShowDifficulty = true;
         public bool ShowBpm = true;
@@ -72,6 +73,7 @@ namespace AdofaiRichPresence {
             GUILayout.Space(5);
             ShowLevelAndArtist = GUILayout.Toggle(ShowLevelAndArtist, " 레벨/곡 이름 & 아티스트 & 제작자");
             ShowProgress = GUILayout.Toggle(ShowProgress, " 진행률 (%)");
+            ShowAccuracy = GUILayout.Toggle(ShowAccuracy, " 정확도 (%)");
             ShowRemainingTiles = GUILayout.Toggle(ShowRemainingTiles, " 남은 타일 수");
             ShowDifficulty = GUILayout.Toggle(ShowDifficulty, " 난이도");
             ShowBpm = GUILayout.Toggle(ShowBpm, " BPM");

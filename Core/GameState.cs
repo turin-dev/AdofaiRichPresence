@@ -27,6 +27,7 @@ namespace AdofaiRichPresence.Core {
         public float TotalSeconds;
         public string PreviewImagePath;
         public string WorkshopId;
+        public float Accuracy;
     }
 
     internal static class GameState {
@@ -106,6 +107,10 @@ namespace AdofaiRichPresence.Core {
             scrController controller = SafeGet(() => scrController.instance);
             if (controller != null) {
                 snap.Progress = SafeGet(() => controller.percentComplete);
+                var mistakes = SafeGet(() => controller.mistakesManager);
+                if (mistakes != null) {
+                    snap.Accuracy = SafeGet(() => mistakes.percentAcc);
+                }
             }
 
             scrLevelMaker lm = SafeGet(() => scrLevelMaker.instance);
