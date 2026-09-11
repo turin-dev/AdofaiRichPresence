@@ -1,0 +1,14 @@
+AI_ATTRIBUTION.md
+  h_b165b1e618ee7a 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "75685880dcd1f8d29d805ac0c78a6f6387aedc0a",
+  "prompts": {},
+  "humans": {
+    "h_b165b1e618ee7a": {
+      "author": "turin-dev <me@turin.my>"
+    }
+  }
+}
