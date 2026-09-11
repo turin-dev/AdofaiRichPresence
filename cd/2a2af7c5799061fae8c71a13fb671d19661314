@@ -1,0 +1,23 @@
+cdn-server/server.js
+  s_c27074af772a52::t_08b07b7fb9cfb0 33,36-46
+  s_c27074af772a52::t_173f6dc1911ed2 47-48
+cdn-server/test/server.test.js
+  s_c27074af772a52::t_08b07b7fb9cfb0 139-156
+  s_c27074af772a52::t_3c28d5b9f76c8e 157
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cd2a2af7c5799061fae8c71a13fb671d19661314",
+  "prompts": {},
+  "sessions": {
+    "s_c27074af772a52": {
+      "agent_id": {
+        "tool": "Codex",
+        "id": "01a090b0-040b-77f0-92ac-a19b5d10be8b",
+        "model": "gpt-5"
+      },
+      "human_author": "turin-dev <me@turin.my>"
+    }
+  }
+}
