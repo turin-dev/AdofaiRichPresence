@@ -1,0 +1,25 @@
+Startup.cs
+  s_c27074af772a52::t_2528deb120e6d9 34
+Settings.cs
+  s_c27074af772a52::t_2528deb120e6d9 213
+README.md
+  s_c27074af772a52::t_2528deb120e6d9 44-45
+Core/Patches.cs
+  s_c27074af772a52::t_2528deb120e6d9 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "93b94a22f3f783bd3e50a61df34ee9007b11801b",
+  "prompts": {},
+  "sessions": {
+    "s_c27074af772a52": {
+      "agent_id": {
+        "tool": "Codex",
+        "id": "01a090b0-040b-77f0-92ac-a19b5d10be8b",
+        "model": "gpt-5"
+      },
+      "human_author": "turin-dev <me@turin.my>"
+    }
+  }
+}
