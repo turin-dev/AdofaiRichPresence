@@ -9,7 +9,7 @@ namespace AdofaiRichPresence.Core {
         internal static Settings Settings;
 
         private static bool Prefix() {
-            return !(Settings?.MuteBuiltInPresence ?? false);
+            return !(Settings != null && Settings.EnableDiscord && Settings.MuteBuiltInPresence);
         }
     }
 

@@ -210,7 +210,7 @@ namespace AdofaiRichPresence {
 
             EnableDiscord = GUILayout.Toggle(EnableDiscord, " Discord 상태 표시 사용");
             if (!EnableDiscord) {
-                GUILayout.Label("  꺼져 있으면 Discord 연결과 상태 업데이트를 중지합니다.");
+                GUILayout.Label("  Discord 연결을 중지하고 게임 기본 Discord 표시를 다시 사용합니다.");
             }
 
             GUILayout.Label("Application ID (숫자만)");

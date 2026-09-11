@@ -41,6 +41,8 @@ run `dotnet build`.
 
 The **Discord 연결** tab shows the current connection state and includes a
 **Discord 다시 연결** button for recovering after Discord starts or restarts.
+Turning off **Discord 상태 표시 사용** stops this mod's connection and lets the
+game's own Discord status run again.
 The **표시 정보** tab includes an example preview so you can check the two
 Discord text lines and their 128-character limits before starting a level.
 

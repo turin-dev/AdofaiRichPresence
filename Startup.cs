@@ -31,7 +31,7 @@ namespace AdofaiRichPresence {
         }
 
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool enabled) {
-            MuteBuiltInPresencePatch.Settings = enabled ? settings : null;
+            MuteBuiltInPresencePatch.Settings = enabled && settings.EnableDiscord ? settings : null;
             if (!enabled) {
                 presenceManager?.Stop();
             }
