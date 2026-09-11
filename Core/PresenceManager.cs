@@ -361,10 +361,14 @@ namespace AdofaiRichPresence.Core {
 
             // Ordered so that if the line has to be truncated, the most
             // time-sensitive info survives and static/flavor info drops first.
-            if (settings.ShowModeState && snap.Mode == GameMode.Dead) {
-                parts.Add("죽음");
-            } else if (settings.ShowModeState && snap.Mode == GameMode.Paused) {
-                parts.Add("일시정지");
+            if (settings.ShowModeState) {
+                if (snap.Mode == GameMode.Dead) {
+                    parts.Add("죽음");
+                } else if (snap.Mode == GameMode.Paused) {
+                    parts.Add("일시정지");
+                } else if (snap.Mode == GameMode.Playing) {
+                    parts.Add(settings.ShowAsListening ? "듣는 중" : "플레이 중");
+                }
             }
             if (settings.ShowProgress) {
                 parts.Add((snap.Progress * 100f).ToString("0.0") + "%");

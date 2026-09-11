@@ -233,6 +233,10 @@ namespace AdofaiRichPresence {
             GUILayout.Label("  이 모드의 표시와 게임 기본 표시가 서로 덮어쓰는 문제를 줄입니다.");
             GUILayout.Space(10);
 
+            if (float.IsNaN(UpdateIntervalSeconds) || float.IsInfinity(UpdateIntervalSeconds)) {
+                UpdateIntervalSeconds = 3f;
+            }
+            UpdateIntervalSeconds = Mathf.Clamp(UpdateIntervalSeconds, 1f, 15f);
             GUILayout.Label("업데이트 주기: " + UpdateIntervalSeconds.ToString("0.0") + "초");
             GUILayout.Label("  짧게 하면 더 빠르게 갱신되지만 게임과 Discord의 작업량이 늘어납니다.");
             UpdateIntervalSeconds = GUILayout.HorizontalSlider(UpdateIntervalSeconds, 1f, 15f, GUILayout.Width(300));
@@ -299,6 +303,9 @@ namespace AdofaiRichPresence {
             SmallImageKeyPlaying = TrimOrEmpty(SmallImageKeyPlaying);
             SmallImageKeyPaused = TrimOrEmpty(SmallImageKeyPaused);
             SmallImageKeyDead = TrimOrEmpty(SmallImageKeyDead);
+            if (float.IsNaN(UpdateIntervalSeconds) || float.IsInfinity(UpdateIntervalSeconds)) {
+                UpdateIntervalSeconds = 3f;
+            }
             UpdateIntervalSeconds = Mathf.Clamp(UpdateIntervalSeconds, 1f, 15f);
         }
 
