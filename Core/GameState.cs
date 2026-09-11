@@ -10,6 +10,7 @@ namespace AdofaiRichPresence.Core {
         Playing,
         Paused,
         Dead,
+        Cleared,
         Editor,
     }
 
@@ -114,10 +115,15 @@ namespace AdofaiRichPresence.Core {
             scrController controller = SafeGet(() => scrController.instance);
             if (controller != null) {
                 snap.Progress = SafeGet(() => controller.percentComplete);
-                var mistakes = SafeGet(() => controller.mistakesManager);
-                if (mistakes != null) {
-                    snap.Accuracy = NanToOne(SafeGet(() => mistakes.percentAcc));
-                    snap.XAccuracy = NanToOne(SafeGet(() => mistakes.percentXAcc));
+                if (RunFreezeState.IsCleared) {
+                    snap.Accuracy = RunFreezeState.FrozenAccuracy;
+                    snap.XAccuracy = RunFreezeState.FrozenXAccuracy;
+                } else {
+                    var mistakes = SafeGet(() => controller.mistakesManager);
+                    if (mistakes != null) {
+                        snap.Accuracy = NanToOne(SafeGet(() => mistakes.percentAcc));
+                        snap.XAccuracy = NanToOne(SafeGet(() => mistakes.percentXAcc));
+                    }
                 }
 
                 // ADOFAI levels routinely change tempo mid-level; the current tile's
@@ -158,6 +164,9 @@ namespace AdofaiRichPresence.Core {
             try {
                 if (ADOBase.isLevelEditor) {
                     return GameMode.Editor;
+                }
+                if (RunFreezeState.IsCleared) {
+                    return GameMode.Cleared;
                 }
                 scrController controller = scrController.instance;
                 if (controller != null && controller.gameworld) {

@@ -93,7 +93,7 @@ namespace AdofaiRichPresence.Core {
             string details;
             string state;
             bool inLevel = snap.Mode == GameMode.Playing || snap.Mode == GameMode.Paused || snap.Mode == GameMode.Dead;
-            bool hasLevelContext = inLevel || snap.Mode == GameMode.Editor;
+            bool hasLevelContext = inLevel || snap.Mode == GameMode.Editor || snap.Mode == GameMode.Cleared;
 
             switch (snap.Mode) {
                 case GameMode.Playing:
@@ -109,6 +109,12 @@ namespace AdofaiRichPresence.Core {
                         ? Truncate(snap.LevelName + (string.IsNullOrEmpty(snap.Artist) ? "" : " - " + snap.Artist), 110)
                         : "제작 중");
                     state = BuildEditorStateLine(snap, settings);
+                    break;
+                case GameMode.Cleared:
+                    details = "클리어: " + (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.LevelName)
+                        ? Truncate(snap.LevelName + (string.IsNullOrEmpty(snap.Artist) ? "" : " - " + snap.Artist), 110)
+                        : "완료!");
+                    state = settings.ShowDetailedResult ? BuildResultStateLine(snap, settings) : "";
                     break;
                 case GameMode.LevelSelect:
                     details = "레벨 선택 중";
@@ -182,6 +188,25 @@ namespace AdofaiRichPresence.Core {
                 return new Timestamps(start, end);
             }
             return new Timestamps(sessionStart);
+        }
+
+        private string BuildResultStateLine(GameSnapshot snap, Settings settings) {
+            var parts = new System.Collections.Generic.List<string>();
+
+            if (settings.ShowAccuracy) {
+                parts.Add("정확도 " + (snap.Accuracy * 100f).ToString("0.00") + "%");
+            }
+            if (settings.ShowXAccuracy) {
+                parts.Add("X-정확도 " + (snap.XAccuracy * 100f).ToString("0.00") + "%");
+            }
+            if (settings.ShowDifficulty && snap.Difficulty > 0) {
+                parts.Add("난이도 " + snap.Difficulty + "/10");
+            }
+            if (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.Author)) {
+                parts.Add("제작: " + snap.Author);
+            }
+
+            return Truncate(string.Join("  |  ", parts.ToArray()), 128);
         }
 
         private string BuildEditorStateLine(GameSnapshot snap, Settings settings) {

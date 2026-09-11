@@ -33,8 +33,22 @@ namespace AdofaiRichPresence.Core {
                         RunFreezeState.FrozenElapsedSeconds = 0f;
                     }
                 }
+            } else if (state == States.Won) {
+                if (!RunFreezeState.IsCleared) {
+                    RunFreezeState.IsCleared = true;
+                    try {
+                        var controller = scrController.instance;
+                        var mistakes = controller?.mistakesManager;
+                        RunFreezeState.FrozenAccuracy = mistakes != null && !float.IsNaN(mistakes.percentAcc) ? mistakes.percentAcc : 1f;
+                        RunFreezeState.FrozenXAccuracy = mistakes != null && !float.IsNaN(mistakes.percentXAcc) ? mistakes.percentXAcc : 1f;
+                    } catch {
+                        RunFreezeState.FrozenAccuracy = 1f;
+                        RunFreezeState.FrozenXAccuracy = 1f;
+                    }
+                }
             } else if (state == States.Start || state == States.Countdown || state == States.PlayerControl) {
                 RunFreezeState.IsFrozen = false;
+                RunFreezeState.IsCleared = false;
             }
         }
     }
@@ -75,6 +89,9 @@ namespace AdofaiRichPresence.Core {
     internal static class RunFreezeState {
         internal static bool IsFrozen;
         internal static float FrozenElapsedSeconds;
+        internal static bool IsCleared;
+        internal static float FrozenAccuracy;
+        internal static float FrozenXAccuracy;
         internal static bool PauseMenuOpen;
         internal static UnityModManager.ModEntry.ModLogger Logger;
         internal static bool DebugLogging;

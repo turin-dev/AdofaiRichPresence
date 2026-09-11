@@ -16,6 +16,7 @@ namespace AdofaiRichPresence {
         public bool ShowAsListening = false;
         public bool ShowMapCoverImage = true;
         public bool ShowModDownloadButton = false;
+        public bool ShowDetailedResult = true;
 
         public string DiscordApplicationId = DiscordConfig.DefaultApplicationId;
         public bool MuteBuiltInPresence = true;
@@ -106,6 +107,7 @@ namespace AdofaiRichPresence {
             ShowAsListening = GUILayout.Toggle(ShowAsListening, " \"플레이 중\" 대신 \"듣는 중\"으로 표시");
             ShowMapCoverImage = GUILayout.Toggle(ShowMapCoverImage, " 맵 커버 이미지를 로고로 자동 사용 (워크샵 레벨만 지원)");
             ShowModDownloadButton = GUILayout.Toggle(ShowModDownloadButton, " \"이 모드 받기\" 버튼 표시");
+            ShowDetailedResult = GUILayout.Toggle(ShowDetailedResult, " 레벨 완료 시 상세 결과(정확도 등) 표시");
         }
 
         private void DrawConnectionTab() {
