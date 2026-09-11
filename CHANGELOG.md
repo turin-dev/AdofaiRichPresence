@@ -2,9 +2,16 @@
 
 ## Unreleased
 
+## 1.2.0 - 2026-09-11
+
 - Add a live example preview to the settings panel, including Discord's 128-character field limits
 - Add Discord connection status and a manual reconnect action to the settings panel
 - Add safe Discord toggle lifecycle, connection retry backoff, and CDN upload validation/cleanup
+- Add clear-result details for Perfect, Early, and Late judgments
+- Improve paused, dead, editor, and menu state handling so Discord status is less stale
+- Add display presets and reorganize settings around core and detailed information
+- Harden CDN uploads, rate limiting, image validation, storage failure handling, and container execution
+- Merge the CDN server into the main repository with tests and CI
 
 ## 1.1.0
 
