@@ -110,8 +110,8 @@ namespace AdofaiRichPresence.Core {
                 snap.Progress = SafeGet(() => controller.percentComplete);
                 var mistakes = SafeGet(() => controller.mistakesManager);
                 if (mistakes != null) {
-                    snap.Accuracy = SafeGet(() => mistakes.percentAcc);
-                    snap.XAccuracy = SafeGet(() => mistakes.percentXAcc);
+                    snap.Accuracy = NanToOne(SafeGet(() => mistakes.percentAcc));
+                    snap.XAccuracy = NanToOne(SafeGet(() => mistakes.percentXAcc));
                 }
             }
 
@@ -194,6 +194,10 @@ namespace AdofaiRichPresence.Core {
             } catch (Exception e) {
                 return "debug 실패: " + e.Message;
             }
+        }
+
+        private static float NanToOne(float value) {
+            return float.IsNaN(value) ? 1f : value;
         }
 
         private static readonly Regex WorkshopIdPattern = new Regex(@"workshop[\\/]content[\\/]977950[\\/](\d+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
