@@ -4,8 +4,8 @@ Tiny, dependency-free Node HTTP server that lets AdofaiRichPresence upload each
 level's cover image once and get back a public HTTPS URL, so Discord can show
 it as the Rich Presence large image. No npm packages required.
 
-Uploads are public (no key needed — anyone running the mod can upload), guarded
-instead by a per-IP rate limit and a 2-hour TTL on stored images.
+Uploads can be public (no key needed) or protected with `UPLOAD_SECRET`.
+They are also guarded by a per-IP rate limit and a 2-hour TTL on stored images.
 
 ## Run
 
@@ -16,6 +16,9 @@ node server.js
 Env vars (all optional):
 - `PORT` (default `8787`)
 - `STORAGE_DIR` (default `./storage`)
+- `PUBLIC_BASE_URL` (default `https://cdn.adofai.turin.my`) — public URL prefix returned after upload
+- `UPLOAD_SECRET` (default empty) — when set, clients must send `Authorization: Bearer <secret>`
+- `TRUST_PROXY` (default `0`) — set to `1` only when a trusted reverse proxy overwrites `X-Forwarded-For`
 - `RATE_LIMIT_MAX` (default `20`) — max uploads per IP per window
 - `RATE_LIMIT_WINDOW_MS` (default `600000` = 10 min)
 
@@ -24,6 +27,9 @@ Env vars (all optional):
 - `POST /upload` — body is the raw image bytes, `Content-Type: image/png|image/jpeg|image/webp`. Returns `{ "url": "https://cdn.adofai.turin.my/i/<sha256>.<ext>" }`. Same image content always returns the same URL (content-addressed, so re-uploads just refresh the TTL instead of duplicating storage). Rate-limited per IP; over the limit returns `429`.
 - `GET /i/<hash>.<ext>` — serves the stored image. Images older than 2 hours since their last upload are deleted (checked both lazily on read and via a background sweep every 10 minutes) and return `404`.
 - `GET /health` — `{ "ok": true, "storedImages": <count>, "uptimeSeconds": <n> }`, for uptime monitoring.
+
+The server accepts PNG, JPEG, and WebP bodies only when their basic file
+signature matches the declared content type. The upload size limit is 8MB.
 
 ## Deploying on your VPS
 

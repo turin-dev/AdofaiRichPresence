@@ -5,6 +5,7 @@
   "description": "Minimal image upload/serve CDN for AdofaiRichPresence's dynamic level-cover Discord images.",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test"
   }
 }
