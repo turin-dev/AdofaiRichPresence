@@ -33,7 +33,11 @@ function send(res, status, body, headers) {
     if (res.writableEnded) {
         return;
     }
-    res.writeHead(status, { "Content-Type": "application/json", ...headers });
+    res.writeHead(status, {
+        "Content-Type": "application/json",
+        "X-Content-Type-Options": "nosniff",
+        ...headers,
+    });
     res.end(JSON.stringify(body));
 }
 
@@ -74,12 +78,23 @@ function isExpired(filePath) {
     }
 }
 
+function listImageEntries() {
+    try {
+        return fs.readdirSync(STORAGE_DIR, { withFileTypes: true })
+            .filter((entry) => entry.isFile() && /^[a-f0-9]{64}\.(png|jpg|webp)$/.test(entry.name));
+    } catch (error) {
+        console.error(`storage read failed: ${error.message}`);
+        return null;
+    }
+}
+
 function sweepExpired() {
     let removed = 0;
-    for (const entry of fs.readdirSync(STORAGE_DIR, { withFileTypes: true })) {
-        if (!entry.isFile() || !/^[a-f0-9]{64}\.(png|jpg|webp)$/.test(entry.name)) {
-            continue;
-        }
+    const entries = listImageEntries();
+    if (!entries) {
+        return;
+    }
+    for (const entry of entries) {
         const filePath = path.join(STORAGE_DIR, entry.name);
         if (isExpired(filePath)) {
             try {
@@ -205,6 +220,7 @@ function handleServe(req, res, filename) {
         const mime = Object.keys(EXT_BY_MIME).find((m) => EXT_BY_MIME[m] === ext) || "application/octet-stream";
         res.writeHead(200, {
             "Content-Type": mime,
+            "X-Content-Type-Options": "nosniff",
             "Cache-Control": "public, max-age=7200",
         });
         res.end(data);
@@ -221,9 +237,12 @@ const server = http.createServer((req, res) => {
     }
 
     if (req.method === "GET" && url.pathname === "/health") {
-        const count = fs.readdirSync(STORAGE_DIR, { withFileTypes: true })
-            .filter((entry) => entry.isFile() && /^[a-f0-9]{64}\.(png|jpg|webp)$/.test(entry.name))
-            .length;
+        const entries = listImageEntries();
+        if (!entries) {
+            send(res, 503, { ok: false, error: "storage unavailable" });
+            return;
+        }
+        const count = entries.length;
         send(res, 200, { ok: true, storedImages: count, uptimeSeconds: Math.floor(process.uptime()) });
         return;
     }

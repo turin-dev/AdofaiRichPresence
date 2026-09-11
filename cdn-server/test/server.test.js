@@ -62,6 +62,7 @@ async function startServer(secret = "") {
 
     return {
         baseUrl: `http://127.0.0.1:${port}`,
+        storageDir,
         async stop() {
             if (!child.killed) {
                 child.kill();
@@ -122,4 +123,14 @@ test("enforces the optional upload secret", async (t) => {
         body: png,
     });
     assert.equal(authorized.status, 200);
+});
+
+test("reports storage failures without terminating the server", async (t) => {
+    const app = await startServer();
+    t.after(() => app.stop());
+
+    await fs.rm(app.storageDir, { recursive: true, force: true });
+    const unavailable = await fetch(`${app.baseUrl}/health`);
+    assert.equal(unavailable.status, 503);
+    assert.deepEqual(await unavailable.json(), { ok: false, error: "storage unavailable" });
 });

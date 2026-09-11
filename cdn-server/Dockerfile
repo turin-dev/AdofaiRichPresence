@@ -3,6 +3,9 @@ FROM node:22-alpine
 WORKDIR /app
 COPY server.js package.json ./
 
+RUN mkdir -p /app/storage && chown -R node:node /app
+USER node
+
 ENV PORT=8787
 EXPOSE 8787
 
