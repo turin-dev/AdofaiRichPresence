@@ -125,18 +125,18 @@ namespace AdofaiRichPresence.Core {
 
             scrController controller = SafeGet(() => scrController.instance);
             if (controller != null) {
-                snap.Progress = SafeGet(() => controller.percentComplete);
+                snap.Progress = NormalizeRatio(SafeGet(() => controller.percentComplete), 0f);
                 if (RunFreezeState.IsCleared) {
-                    snap.Accuracy = RunFreezeState.FrozenAccuracy;
-                    snap.XAccuracy = RunFreezeState.FrozenXAccuracy;
+                    snap.Accuracy = NormalizeRatio(RunFreezeState.FrozenAccuracy, 1f);
+                    snap.XAccuracy = NormalizeRatio(RunFreezeState.FrozenXAccuracy, 1f);
                     snap.PerfectCount = RunFreezeState.FrozenPerfectCount;
                     snap.EarlyCount = RunFreezeState.FrozenEarlyCount;
                     snap.LateCount = RunFreezeState.FrozenLateCount;
                 } else {
                     var mistakes = SafeGet(() => controller.mistakesManager);
                     if (mistakes != null) {
-                        snap.Accuracy = NanToOne(SafeGet(() => mistakes.percentAcc));
-                        snap.XAccuracy = NanToOne(SafeGet(() => mistakes.percentXAcc));
+                        snap.Accuracy = NormalizeRatio(SafeGet(() => mistakes.percentAcc), 1f);
+                        snap.XAccuracy = NormalizeRatio(SafeGet(() => mistakes.percentXAcc), 1f);
                     }
                 }
 
@@ -241,8 +241,11 @@ namespace AdofaiRichPresence.Core {
             }
         }
 
-        private static float NanToOne(float value) {
-            return float.IsNaN(value) ? 1f : value;
+        private static float NormalizeRatio(float value, float fallback) {
+            if (float.IsNaN(value) || float.IsInfinity(value)) {
+                return fallback;
+            }
+            return Math.Max(0f, Math.Min(1f, value));
         }
 
         private static readonly Regex WorkshopIdPattern = new Regex(@"workshop[\\/]content[\\/]977950[\\/](\d+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
