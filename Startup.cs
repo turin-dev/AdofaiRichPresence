@@ -10,11 +10,15 @@ namespace AdofaiRichPresence {
 
         public static bool Load(UnityModManager.ModEntry modEntry) {
             settings = Settings.Load<Settings>(modEntry);
+            if (string.IsNullOrEmpty(settings.DiscordApplicationId)) {
+                settings.DiscordApplicationId = DiscordConfig.DefaultApplicationId;
+            }
             presenceManager = new PresenceManager(modEntry.Logger);
 
             harmony = new Harmony(modEntry.Info.Id);
             harmony.PatchAll();
             MuteBuiltInPresencePatch.Settings = settings;
+            RunFreezeState.Logger = modEntry.Logger;
 
             modEntry.OnToggle = OnToggle;
             modEntry.OnGUI = OnGUI;
@@ -41,6 +45,7 @@ namespace AdofaiRichPresence {
             if (!modEntry.Active) {
                 return;
             }
+            RunFreezeState.DebugLogging = settings.DebugLogging;
             presenceManager.Tick(settings, deltaTime);
         }
 
