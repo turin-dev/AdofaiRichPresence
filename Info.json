@@ -5,6 +5,7 @@
     "Version": "1.1.0",
     "ManagerVersion": "0.22.14",
     "HomePage": "https://github.com/turin-dev/AdofaiRichPresence",
+    "Repository": "https://raw.githubusercontent.com/turin-dev/AdofaiRichPresence/main/Repository.json",
     "AssemblyName": "AdofaiRichPresence.dll",
     "EntryMethod": "AdofaiRichPresence.Startup.Load"
 }
