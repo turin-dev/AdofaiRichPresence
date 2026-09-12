@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using AdofaiRichPresence.Core;
 using HarmonyLib;
 using UnityModManagerNet;
@@ -9,9 +10,12 @@ namespace AdofaiRichPresence {
         private static PresenceManager presenceManager;
         private static Harmony harmony;
         private static DateTime nextCallbackErrorLogUtc;
+        private static readonly Stopwatch callbackClock = Stopwatch.StartNew();
+        private static readonly CallbackRecovery updateRecovery = new CallbackRecovery();
 
         public static bool Load(UnityModManager.ModEntry modEntry) {
             nextCallbackErrorLogUtc = DateTime.MinValue;
+            updateRecovery.Reset();
             settings = Settings.Load<Settings>(modEntry);
             if (settings.EnableDiscord && string.IsNullOrEmpty(settings.DiscordApplicationId)) {
                 settings.DiscordApplicationId = DiscordConfig.DefaultApplicationId;
@@ -34,8 +38,15 @@ namespace AdofaiRichPresence {
         }
 
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool enabled) {
-            MuteBuiltInPresencePatch.Settings = enabled && settings != null && settings.EnableDiscord ? settings : null;
+            // Keep the live settings reference while the mod is enabled. The
+            // prefix evaluates EnableDiscord on every call, including after undo.
+            MuteBuiltInPresencePatch.Settings = enabled ? settings : null;
             RunFreezeState.Reset();
+            updateRecovery.Reset();
+            if (enabled) {
+                RunFreezeState.Logger = modEntry.Logger;
+                RunFreezeState.DebugLogging = settings != null && settings.DebugLogging;
+            }
             if (!enabled) {
                 presenceManager?.Stop();
             }
@@ -59,16 +70,16 @@ namespace AdofaiRichPresence {
         }
 
         private static void OnUpdate(UnityModManager.ModEntry modEntry, float deltaTime) {
-            try {
-                if (!modEntry.Active || settings == null || presenceManager == null) {
-                    return;
-                }
-                RunFreezeState.DebugLogging = settings.DebugLogging;
-                presenceManager.Tick(settings, deltaTime);
-            } catch (Exception e) {
-                LogCallbackError(modEntry, "상태 갱신 실패", e);
-                presenceManager?.RequestReconnect();
+            if (modEntry == null || !modEntry.Active || settings == null || presenceManager == null) {
+                return;
             }
+            updateRecovery.Run(callbackClock.Elapsed,
+                () => {
+                    RunFreezeState.DebugLogging = settings.DebugLogging;
+                    presenceManager.Tick(settings, deltaTime);
+                },
+                () => presenceManager.Stop(),
+                e => LogCallbackError(modEntry, "상태 갱신 또는 정리 실패 (30초 후 재시도)", e));
         }
 
         private static bool OnUnload(UnityModManager.ModEntry modEntry) {

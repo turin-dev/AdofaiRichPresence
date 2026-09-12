@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Confirm full settings resets and provide an undo action that restores unsaved settings without persisting the backup
-
+- Wait 30 seconds after unexpected update failures, isolate cleanup failures, and restore logging/live Discord toggle behavior on mod activation
 - Add an optional checkpoint usage counter to the Discord presence and clear-result details
 - Refresh changed level-cover files automatically instead of reusing a stale CDN URL
 

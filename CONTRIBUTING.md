@@ -13,6 +13,18 @@ installation. For a normal build that does not write into the game directory:
 dotnet build --no-restore
 ```
 
+After a Debug build, run these Windows PowerShell checks against the compiled
+mod without launching Unity or connecting to Discord:
+
+```powershell
+powershell -NoProfile -File scripts/Test-SettingsReset.ps1
+powershell -NoProfile -File scripts/Test-LifecycleRecovery.ps1
+```
+
+Both scripts accept `-AdofaiDir` for a non-default game install. The lifecycle
+check uses simulated time to verify retry behavior, cleanup failures and mod
+toggle transitions; it does not replace an in-game test.
+
 If the game is installed elsewhere, pass its path explicitly:
 
 ```powershell
