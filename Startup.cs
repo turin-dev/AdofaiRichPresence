@@ -1,3 +1,4 @@
+using System;
 using AdofaiRichPresence.Core;
 using HarmonyLib;
 using UnityModManagerNet;
@@ -7,8 +8,10 @@ namespace AdofaiRichPresence {
         private static Settings settings;
         private static PresenceManager presenceManager;
         private static Harmony harmony;
+        private static DateTime nextCallbackErrorLogUtc;
 
         public static bool Load(UnityModManager.ModEntry modEntry) {
+            nextCallbackErrorLogUtc = DateTime.MinValue;
             settings = Settings.Load<Settings>(modEntry);
             if (settings.EnableDiscord && string.IsNullOrEmpty(settings.DiscordApplicationId)) {
                 settings.DiscordApplicationId = DiscordConfig.DefaultApplicationId;
@@ -31,7 +34,8 @@ namespace AdofaiRichPresence {
         }
 
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool enabled) {
-            MuteBuiltInPresencePatch.Settings = enabled && settings.EnableDiscord ? settings : null;
+            MuteBuiltInPresencePatch.Settings = enabled && settings != null && settings.EnableDiscord ? settings : null;
+            RunFreezeState.Reset();
             if (!enabled) {
                 presenceManager?.Stop();
             }
@@ -39,19 +43,32 @@ namespace AdofaiRichPresence {
         }
 
         private static void OnGUI(UnityModManager.ModEntry modEntry) {
-            settings.Draw(modEntry, presenceManager);
+            try {
+                settings?.Draw(modEntry, presenceManager);
+            } catch (Exception e) {
+                LogCallbackError(modEntry, "설정 화면 갱신 실패", e);
+            }
         }
 
         private static void OnSaveGUI(UnityModManager.ModEntry modEntry) {
-            settings.Save(modEntry);
+            try {
+                settings?.Save(modEntry);
+            } catch (Exception e) {
+                LogCallbackError(modEntry, "설정 저장 실패", e);
+            }
         }
 
         private static void OnUpdate(UnityModManager.ModEntry modEntry, float deltaTime) {
-            if (!modEntry.Active) {
-                return;
+            try {
+                if (!modEntry.Active || settings == null || presenceManager == null) {
+                    return;
+                }
+                RunFreezeState.DebugLogging = settings.DebugLogging;
+                presenceManager.Tick(settings, deltaTime);
+            } catch (Exception e) {
+                LogCallbackError(modEntry, "상태 갱신 실패", e);
+                presenceManager?.RequestReconnect();
             }
-            RunFreezeState.DebugLogging = settings.DebugLogging;
-            presenceManager.Tick(settings, deltaTime);
         }
 
         private static bool OnUnload(UnityModManager.ModEntry modEntry) {
@@ -60,6 +77,15 @@ namespace AdofaiRichPresence {
             harmony.UnpatchAll(modEntry.Info.Id);
             RunFreezeState.Reset();
             return true;
+        }
+
+        private static void LogCallbackError(UnityModManager.ModEntry modEntry, string context, Exception error) {
+            DateTime now = DateTime.UtcNow;
+            if (now < nextCallbackErrorLogUtc) {
+                return;
+            }
+            nextCallbackErrorLogUtc = now.AddSeconds(30);
+            modEntry?.Logger?.Error(context + ": " + error.Message);
         }
     }
 }
