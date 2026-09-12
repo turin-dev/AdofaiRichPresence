@@ -1,7 +1,7 @@
 # Root deployment image for the CDN service in this monorepo.
 # Dokploy builds from the repository root, so the CDN-specific Dockerfile is
 # mirrored here with paths relative to that build context.
-FROM node:22-alpine
+FROM node:26-alpine
 
 WORKDIR /app
 COPY cdn-server/server.js cdn-server/package.json ./
