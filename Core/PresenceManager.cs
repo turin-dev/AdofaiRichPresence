@@ -320,10 +320,10 @@ namespace AdofaiRichPresence.Core {
         private string BuildResultStateLine(GameSnapshot snap, Settings settings) {
             var parts = new System.Collections.Generic.List<string>();
 
-            if (settings.ShowAccuracy) {
+            if (settings.ShowAccuracy && snap.HasAccuracy) {
                 parts.Add("정확도 " + (snap.Accuracy * 100f).ToString("0.00") + "%");
             }
-            if (settings.ShowXAccuracy) {
+            if (settings.ShowXAccuracy && snap.HasXAccuracy) {
                 parts.Add("X-정확도 " + (snap.XAccuracy * 100f).ToString("0.00") + "%");
             }
             parts.Add("정확 " + snap.PerfectCount + "  빠름 " + snap.EarlyCount + "  느림 " + snap.LateCount);
@@ -376,10 +376,10 @@ namespace AdofaiRichPresence.Core {
             if (settings.ShowRemainingTiles && snap.TotalTiles > 0) {
                 parts.Add("남은 " + snap.RemainingTiles + "/" + snap.TotalTiles + " 타일");
             }
-            if (settings.ShowAccuracy) {
+            if (settings.ShowAccuracy && snap.HasAccuracy) {
                 parts.Add("정확도 " + (snap.Accuracy * 100f).ToString("0.0") + "%");
             }
-            if (settings.ShowXAccuracy) {
+            if (settings.ShowXAccuracy && snap.HasXAccuracy) {
                 parts.Add("X-정확도 " + (snap.XAccuracy * 100f).ToString("0.0") + "%");
             }
             if (settings.ShowBpm && snap.Bpm > 0) {

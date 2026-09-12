@@ -30,6 +30,8 @@ namespace AdofaiRichPresence.Core {
         public string WorkshopId;
         public float Accuracy;
         public float XAccuracy;
+        public bool HasAccuracy;
+        public bool HasXAccuracy;
         public int PerfectCount;
         public int EarlyCount;
         public int LateCount;
@@ -131,6 +133,8 @@ namespace AdofaiRichPresence.Core {
                 if (RunFreezeState.IsCleared) {
                     snap.Accuracy = NormalizeRatio(RunFreezeState.FrozenAccuracy, 1f);
                     snap.XAccuracy = NormalizeRatio(RunFreezeState.FrozenXAccuracy, 1f);
+                    snap.HasAccuracy = true;
+                    snap.HasXAccuracy = true;
                     snap.PerfectCount = RunFreezeState.FrozenPerfectCount;
                     snap.EarlyCount = RunFreezeState.FrozenEarlyCount;
                     snap.LateCount = RunFreezeState.FrozenLateCount;
@@ -139,6 +143,8 @@ namespace AdofaiRichPresence.Core {
                     if (mistakes != null) {
                         snap.Accuracy = NormalizeRatio(SafeGet(() => mistakes.percentAcc), 1f);
                         snap.XAccuracy = NormalizeRatio(SafeGet(() => mistakes.percentXAcc), 1f);
+                        snap.HasAccuracy = true;
+                        snap.HasXAccuracy = true;
                     }
                 }
 
