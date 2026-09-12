@@ -1,0 +1,21 @@
+Core/GameState.cs
+  s_c27074af772a52::t_41a30d9b0d4d4f 33-34,136-137,146-147
+Core/PresenceManager.cs
+  s_c27074af772a52::t_41a30d9b0d4d4f 323,326,379,382
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f918cc20ef95fe222a7f0b3df37d861773e84dc5",
+  "prompts": {},
+  "sessions": {
+    "s_c27074af772a52": {
+      "agent_id": {
+        "tool": "Codex",
+        "id": "01a090b0-040b-77f0-92ac-a19b5d10be8b",
+        "model": "gpt-5"
+      },
+      "human_author": "turin-dev <me@turin.my>"
+    }
+  }
+}
