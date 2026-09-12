@@ -1,0 +1,51 @@
+.github/ISSUE_TEMPLATE/feature.yml
+  s_c27074af772a52::t_adb17325692926 1-21
+tests/CoreChecks/Program.cs
+  s_c27074af772a52::t_adb17325692926 1-76
+.github/workflows/release-verify.yml
+  s_c27074af772a52::t_adb17325692926 1-48
+.github/ISSUE_TEMPLATE/config.yml
+  s_c27074af772a52::t_adb17325692926 1-5
+scripts/Test-Repository.ps1
+  s_c27074af772a52::t_adb17325692926 1-16
+.github/workflows/codeql.yml
+  s_c27074af772a52::t_adb17325692926 1-34
+README.md
+  s_c27074af772a52::t_adb17325692926 3-10
+CONTRIBUTING.md
+  s_c27074af772a52::t_adb17325692926 49-90
+.github/ISSUE_TEMPLATE/bug.yml
+  s_c27074af772a52::t_adb17325692926 1-39
+scripts/Test-ReleaseArchive.ps1
+  s_c27074af772a52::t_adb17325692926 1-42
+.github/workflows/repository.yml
+  s_c27074af772a52::t_adb17325692926 1-38
+.github/dependabot.yml
+  s_c27074af772a52::t_adb17325692926 1-20
+.github/PULL_REQUEST_TEMPLATE.md
+  s_c27074af772a52::t_adb17325692926 1-19
+.github/workflows/cdn-server.yml
+  s_c27074af772a52::t_adb17325692926 5,8,20,25-26
+AdofaiRichPresence.csproj
+  s_c27074af772a52::t_adb17325692926 75
+tests/CoreChecks/CoreChecks.csproj
+  s_c27074af772a52::t_adb17325692926 1-11
+.github/release.yml
+  s_c27074af772a52::t_adb17325692926 1-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "06368df749f25fc1cc3c59518f935d0ab7f4f215",
+  "prompts": {},
+  "sessions": {
+    "s_c27074af772a52": {
+      "agent_id": {
+        "tool": "Codex",
+        "id": "01a090b0-040b-77f0-92ac-a19b5d10be8b",
+        "model": "unknown"
+      },
+      "human_author": "turin-dev <me@turin.my>"
+    }
+  }
+}
