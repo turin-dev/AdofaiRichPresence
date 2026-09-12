@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add an optional checkpoint usage counter to the Discord presence and clear-result details
+- Refresh changed level-cover files automatically instead of reusing a stale CDN URL
 
 ## 1.2.0 - 2026-09-11
 

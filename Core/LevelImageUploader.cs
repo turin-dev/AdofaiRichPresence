@@ -14,8 +14,12 @@ namespace AdofaiRichPresence.Core {
         private string cachedSourcePath;
         private string cachedUrl;
         private string cachedConfigurationKey;
+        private long cachedSourceLength = -1;
+        private DateTime cachedSourceLastWriteUtc;
         private string pendingSourcePath;
         private string pendingConfigurationKey;
+        private long pendingSourceLength = -1;
+        private DateTime pendingSourceLastWriteUtc;
         private UnityWebRequestAsyncOperation pendingRequest;
         private string failedConfigurationKey;
         private DateTime retryNotBeforeUtc;
@@ -37,11 +41,13 @@ namespace AdofaiRichPresence.Core {
                 return null;
             }
             string configurationKey = BuildConfigurationKey(previewImagePath, uploadUrl, uploadSecret);
-            if (previewImagePath == cachedSourcePath && configurationKey == cachedConfigurationKey) {
+            if (previewImagePath == cachedSourcePath && configurationKey == cachedConfigurationKey
+                && IsSourceCurrent(previewImagePath, cachedSourceLength, cachedSourceLastWriteUtc)) {
                 return cachedUrl;
             }
             if (pendingRequest != null) {
-                if (configurationKey == pendingConfigurationKey) {
+                if (configurationKey == pendingConfigurationKey
+                    && IsSourceCurrent(previewImagePath, pendingSourceLength, pendingSourceLastWriteUtc)) {
                     return null;
                 }
                 AbortPendingRequest();
@@ -64,9 +70,13 @@ namespace AdofaiRichPresence.Core {
             UnityWebRequest req = pendingRequest.webRequest;
             string sourcePath = pendingSourcePath;
             string configurationKey = pendingConfigurationKey;
+            long sourceLength = pendingSourceLength;
+            DateTime sourceLastWriteUtc = pendingSourceLastWriteUtc;
             pendingRequest = null;
             pendingSourcePath = null;
             pendingConfigurationKey = null;
+            pendingSourceLength = -1;
+            pendingSourceLastWriteUtc = default(DateTime);
 
             try {
                 if (req == null || req.result != UnityWebRequest.Result.Success) {
@@ -84,6 +94,8 @@ namespace AdofaiRichPresence.Core {
                 cachedSourcePath = sourcePath;
                 cachedConfigurationKey = configurationKey;
                 cachedUrl = url;
+                cachedSourceLength = sourceLength;
+                cachedSourceLastWriteUtc = sourceLastWriteUtc;
                 failedConfigurationKey = null;
                 justCompleted = true;
                 if (RunFreezeState.DebugLogging) {
@@ -114,7 +126,12 @@ namespace AdofaiRichPresence.Core {
                     MarkFailure(configurationKey, "맵 커버 이미지는 8MB 이하이어야 합니다.");
                     return;
                 }
+                long sourceLength = file.Length;
+                DateTime sourceLastWriteUtc = file.LastWriteTimeUtc;
                 bytes = File.ReadAllBytes(previewImagePath);
+
+                pendingSourceLength = sourceLength;
+                pendingSourceLastWriteUtc = sourceLastWriteUtc;
             } catch (Exception e) {
                 MarkFailure(configurationKey, "맵 이미지 읽기 실패: " + e.Message);
                 return;
@@ -215,6 +232,20 @@ namespace AdofaiRichPresence.Core {
                 && !string.IsNullOrEmpty(uri.Host);
         }
 
+        private static bool IsSourceCurrent(string path, long expectedLength, DateTime expectedLastWriteUtc) {
+            if (string.IsNullOrEmpty(path) || expectedLength < 0) {
+                return false;
+            }
+            try {
+                FileInfo file = new FileInfo(path);
+                return file.Exists
+                    && file.Length == expectedLength
+                    && file.LastWriteTimeUtc == expectedLastWriteUtc;
+            } catch {
+                return false;
+            }
+        }
+
         private void MarkFailure(string configurationKey, string message) {
             if (configurationKey == failedConfigurationKey && DateTime.UtcNow < retryNotBeforeUtc) {
                 return;
@@ -233,6 +264,8 @@ namespace AdofaiRichPresence.Core {
             pendingRequest = null;
             pendingSourcePath = null;
             pendingConfigurationKey = null;
+            pendingSourceLength = -1;
+            pendingSourceLastWriteUtc = default(DateTime);
             try {
                 req?.Abort();
             } catch {
@@ -246,6 +279,8 @@ namespace AdofaiRichPresence.Core {
             cachedSourcePath = null;
             cachedConfigurationKey = null;
             cachedUrl = null;
+            cachedSourceLength = -1;
+            cachedSourceLastWriteUtc = default(DateTime);
             failedConfigurationKey = null;
             justCompleted = false;
         }
