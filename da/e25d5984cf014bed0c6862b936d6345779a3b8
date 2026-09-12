@@ -1,0 +1,27 @@
+Startup.cs
+  s_c27074af772a52::t_85b01cda41321c 2,13-14,18,41-43,45-49,73-74,76-82
+CONTRIBUTING.md
+  s_c27074af772a52::t_85b01cda41321c 16-27
+Core/CallbackRecovery.cs
+  s_c27074af772a52::t_85b01cda41321c 1-41
+scripts/Test-LifecycleRecovery.ps1
+  s_c27074af772a52::t_85b01cda41321c 1-89
+CHANGELOG.md
+  s_c27074af772a52::t_85b01cda41321c 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dae25d5984cf014bed0c6862b936d6345779a3b8",
+  "prompts": {},
+  "sessions": {
+    "s_c27074af772a52": {
+      "agent_id": {
+        "tool": "Codex",
+        "id": "01a090b0-040b-77f0-92ac-a19b5d10be8b",
+        "model": "gpt-6"
+      },
+      "human_author": "turin-dev <me@turin.my>"
+    }
+  }
+}
