@@ -53,6 +53,12 @@ namespace AdofaiRichPresence {
         internal void Draw(UnityModManager.ModEntry modEntry, PresenceManager presenceManager) {
             GUILayout.Label("ADOFAI Rich Presence");
             GUILayout.Label("설정을 바꾼 뒤 Unity Mod Manager의 저장 버튼을 눌러 변경사항을 보존하세요.");
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("기본 설정 전체 복원", GUILayout.Width(150))) {
+                ResetToDefaults();
+            }
+            GUILayout.Label("저장 버튼을 누르기 전까지는 복원 결과를 취소할 수 있습니다.");
+            GUILayout.EndHorizontal();
             GUILayout.Space(8);
 
             selectedTab = Mathf.Clamp(selectedTab, 0, TabNames.Length - 1);
@@ -318,6 +324,39 @@ namespace AdofaiRichPresence {
 
         private static string TrimOrEmpty(string value) {
             return string.IsNullOrWhiteSpace(value) ? "" : value.Trim();
+        }
+
+        private void ResetToDefaults() {
+            Settings defaults = new Settings();
+            ShowLevelAndArtist = defaults.ShowLevelAndArtist;
+            ShowProgress = defaults.ShowProgress;
+            ShowAccuracy = defaults.ShowAccuracy;
+            ShowXAccuracy = defaults.ShowXAccuracy;
+            ShowRemainingTiles = defaults.ShowRemainingTiles;
+            ShowDifficulty = defaults.ShowDifficulty;
+            ShowBpm = defaults.ShowBpm;
+            ShowElapsedTime = defaults.ShowElapsedTime;
+            ShowModeState = defaults.ShowModeState;
+            ShowCheckpointUsage = defaults.ShowCheckpointUsage;
+            ShowAsListening = defaults.ShowAsListening;
+            ShowMapCoverImage = defaults.ShowMapCoverImage;
+            ShowModDownloadButton = defaults.ShowModDownloadButton;
+            ShowDetailedResult = defaults.ShowDetailedResult;
+            EnableDiscord = defaults.EnableDiscord;
+            DiscordApplicationId = defaults.DiscordApplicationId;
+            MuteBuiltInPresence = defaults.MuteBuiltInPresence;
+            UpdateIntervalSeconds = defaults.UpdateIntervalSeconds;
+            LargeImageKeyDefault = defaults.LargeImageKeyDefault;
+            LargeImageKeyPaused = defaults.LargeImageKeyPaused;
+            LargeImageKeyMenu = defaults.LargeImageKeyMenu;
+            LargeImageKeyEditor = defaults.LargeImageKeyEditor;
+            SmallImageKeyPlaying = defaults.SmallImageKeyPlaying;
+            SmallImageKeyPaused = defaults.SmallImageKeyPaused;
+            SmallImageKeyDead = defaults.SmallImageKeyDead;
+            CdnUploadUrl = defaults.CdnUploadUrl;
+            CdnUploadSecret = defaults.CdnUploadSecret;
+            DebugLogging = defaults.DebugLogging;
+            selectedTab = 0;
         }
     }
 }
