@@ -32,6 +32,8 @@ namespace AdofaiRichPresence.Core {
         public float XAccuracy;
         public bool HasAccuracy;
         public bool HasXAccuracy;
+        public int CheckpointsUsed;
+        public bool HasCheckpointUsage;
         public int PerfectCount;
         public int EarlyCount;
         public int LateCount;
@@ -129,6 +131,8 @@ namespace AdofaiRichPresence.Core {
 
             scrController controller = SafeGet(() => scrController.instance);
             if (controller != null) {
+                snap.CheckpointsUsed = Math.Max(0, SafeGet(() => scrController.checkpointsUsed));
+                snap.HasCheckpointUsage = true;
                 snap.Progress = NormalizeRatio(SafeGet(() => controller.percentComplete), 0f);
                 if (RunFreezeState.IsCleared) {
                     snap.Accuracy = NormalizeRatio(RunFreezeState.FrozenAccuracy, 1f);

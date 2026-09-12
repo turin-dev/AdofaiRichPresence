@@ -327,6 +327,9 @@ namespace AdofaiRichPresence.Core {
                 parts.Add("X-정확도 " + (snap.XAccuracy * 100f).ToString("0.00") + "%");
             }
             parts.Add("정확 " + snap.PerfectCount + "  빠름 " + snap.EarlyCount + "  느림 " + snap.LateCount);
+            if (settings.ShowCheckpointUsage && snap.HasCheckpointUsage && snap.CheckpointsUsed > 0) {
+                parts.Add("체크포인트 " + snap.CheckpointsUsed + "회");
+            }
             if (settings.ShowDifficulty && snap.Difficulty > 0) {
                 parts.Add("난이도 " + snap.Difficulty + "/10");
             }
@@ -375,6 +378,9 @@ namespace AdofaiRichPresence.Core {
             }
             if (settings.ShowRemainingTiles && snap.TotalTiles > 0) {
                 parts.Add("남은 " + snap.RemainingTiles + "/" + snap.TotalTiles + " 타일");
+            }
+            if (settings.ShowCheckpointUsage && snap.HasCheckpointUsage && snap.CheckpointsUsed > 0) {
+                parts.Add("체크포인트 " + snap.CheckpointsUsed + "회");
             }
             if (settings.ShowAccuracy && snap.HasAccuracy) {
                 parts.Add("정확도 " + (snap.Accuracy * 100f).ToString("0.0") + "%");

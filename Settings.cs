@@ -14,6 +14,7 @@ namespace AdofaiRichPresence {
         public bool ShowBpm = true;
         public bool ShowElapsedTime = true;
         public bool ShowModeState = true;
+        public bool ShowCheckpointUsage = false;
 
         public bool ShowAsListening = false;
         public bool ShowMapCoverImage = true;
@@ -90,13 +91,14 @@ namespace AdofaiRichPresence {
             if (GUILayout.Button("추천 설정", GUILayout.Width(110))) {
                 ShowLevelAndArtist = ShowProgress = ShowAccuracy = ShowRemainingTiles =
                     ShowDifficulty = ShowBpm = ShowElapsedTime = ShowModeState = true;
+                ShowCheckpointUsage = true;
                 ShowDetailedResult = true;
             }
             if (GUILayout.Button("간단히 보기", GUILayout.Width(110))) {
                 ShowLevelAndArtist = true;
                 ShowProgress = true;
                 ShowAccuracy = ShowXAccuracy = ShowRemainingTiles =
-                    ShowDifficulty = ShowBpm = ShowElapsedTime = false;
+                    ShowDifficulty = ShowBpm = ShowElapsedTime = ShowCheckpointUsage = false;
                 ShowModeState = true;
                 ShowDetailedResult = false;
             }
@@ -116,6 +118,7 @@ namespace AdofaiRichPresence {
             ShowDifficulty = GUILayout.Toggle(ShowDifficulty, " 난이도");
             ShowBpm = GUILayout.Toggle(ShowBpm, " BPM");
             ShowElapsedTime = GUILayout.Toggle(ShowElapsedTime, " 경과 시간 / 곡 길이");
+            ShowCheckpointUsage = GUILayout.Toggle(ShowCheckpointUsage, " 체크포인트 사용 횟수");
 
             GUILayout.Space(12);
             DrawPresencePreview();
@@ -148,6 +151,9 @@ namespace AdofaiRichPresence {
             }
             if (ShowElapsedTime && !ShowAsListening) {
                 stateParts.Add("1:23 / 3:14");
+            }
+            if (ShowCheckpointUsage) {
+                stateParts.Add("체크포인트 2회");
             }
             if (ShowDifficulty) {
                 stateParts.Add("난이도 8/10");

@@ -51,6 +51,7 @@ Discord text lines and their 128-character limits before starting a level.
 Configurable in the mod's settings panel:
 - Level name & artist
 - Progress % and remaining tiles
+- Optional checkpoint usage count
 - Difficulty (1-10) and BPM
 - Elapsed / total time
 - Current mode (playing / paused / menu / editor)
