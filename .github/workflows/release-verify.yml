@@ -1,0 +1,48 @@
+name: Release verification
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to verify (for example v1.2.0)
+        required: true
+        default: v1.2.0
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+      - name: Verify published ZIP without executing it
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:RELEASE_TAG -notmatch '^v\d+\.\d+\.\d+$') { throw 'Expected vMAJOR.MINOR.PATCH.' }
+          $version = $env:RELEASE_TAG.Substring(1)
+          $releaseJson = gh api "repos/$env:GITHUB_REPOSITORY/releases/tags/$env:RELEASE_TAG"
+          if ($LASTEXITCODE -ne 0) { throw 'Could not read release.' }
+          $release = $releaseJson | ConvertFrom-Json
+          if ($release.draft) { throw 'Release is still a draft.' }
+          $name = "AdofaiRichPresence-$version.zip"
+          $assets = @($release.assets | Where-Object { $_.name -ceq $name })
+          if ($assets.Count -ne 1 -or $assets[0].digest -notmatch '^sha256:([a-fA-F0-9]{64})$') {
+            throw 'Expected exactly one ZIP asset with a SHA256 digest.'
+          }
+          $sha = $Matches[1]
+          $destination = Join-Path $env:RUNNER_TEMP ([guid]::NewGuid().ToString())
+          gh release download $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --pattern $name --dir $destination
+          if ($LASTEXITCODE -ne 0) { throw 'Release download failed.' }
+          ./scripts/Test-ReleaseArchive.ps1 -ArchivePath (Join-Path $destination $name) -Version $version -Sha256 $sha
+          "Verified $name against GitHub SHA256: $sha. Game/Discord runtime was not tested." >> $env:GITHUB_STEP_SUMMARY

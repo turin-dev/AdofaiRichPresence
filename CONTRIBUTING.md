@@ -46,6 +46,48 @@ or deployment API keys in source control.
 
 ## Pull requests
 
+GitHub Actions runs the following checks on `main` pushes and every pull request:
+
+- **Repository CI**: production `CallbackRecovery` source regression scenarios on
+  Windows/Linux with .NET 8; release metadata consistency and PowerShell syntax.
+- **CDN server CI**: Node tests, both Docker build contexts, container health and upload smoke tests.
+- **CodeQL**: JavaScript/TypeScript and GitHub Actions security analysis, also weekly.
+
+Run the portable checks locally with:
+
+```powershell
+dotnet run --project tests/CoreChecks/CoreChecks.csproj --configuration Release
+pwsh -NoProfile -File scripts/Test-Repository.ps1
+```
+
+These hosted checks do **not** build the complete net48 Unity mod or run its UMM
+integration checks: proprietary game assemblies stay on the developer's machine.
+Continue running the full local build and both compiled-mod scripts above for C#
+changes. Do not enable self-hosted runners for untrusted PRs or upload game DLLs.
+
+Dependabot opens weekly reviewable PRs for Actions, NuGet and both Dockerfiles.
+Dependency PRs are not automatically merged. NuGet updates need a full local mod
+build and game compatibility verification before approval.
+
+### Releases
+
+Use a new version/tag for new code; never replace a published binary silently.
+Update `Info.json` and `Repository.json` together, run the local build/tests and
+record the exact commit and any unverified game/Discord behavior in release notes.
+Package the three redistributable DLLs (`AdofaiRichPresence.dll`, `DiscordRPC.dll`,
+`Newtonsoft.Json.dll`) and `Info.json` at the ZIP root. Optional documentation is
+limited to LICENSE, README.md, CHANGELOG.md and AI_ATTRIBUTION.md. Do not include
+Unity/game/UMM DLLs, Settings.xml, upload secrets or debug output.
+
+**Release verification** runs when a release is published, or manually via
+Actions → Release verification → Run workflow with an existing `vX.Y.Z` tag.
+It downloads the ZIP, checks its GitHub SHA256 digest, exact file allowlist,
+mod identity/version and PE headers, without executing or extracting it. It is a
+post-publication integrity check, not a pre-publication gate or proof of gameplay.
+Generated release notes group PRs by bug, enhancement, dependencies and documentation.
+
+### Review checklist
+
 - Describe the behavior that changed and the reason for it.
 - Call out any settings, migration, deployment, or release metadata changes.
 - Confirm the local checks above and mention anything that could not be tested,

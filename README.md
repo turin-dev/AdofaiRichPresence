@@ -1,5 +1,13 @@
 # AdofaiRichPresence
 
+[![Repository CI](https://github.com/turin-dev/AdofaiRichPresence/actions/workflows/repository.yml/badge.svg)](https://github.com/turin-dev/AdofaiRichPresence/actions/workflows/repository.yml)
+[![CDN server CI](https://github.com/turin-dev/AdofaiRichPresence/actions/workflows/cdn-server.yml/badge.svg)](https://github.com/turin-dev/AdofaiRichPresence/actions/workflows/cdn-server.yml)
+[![CodeQL](https://github.com/turin-dev/AdofaiRichPresence/actions/workflows/codeql.yml/badge.svg)](https://github.com/turin-dev/AdofaiRichPresence/actions/workflows/codeql.yml)
+
+[Download the latest release](https://github.com/turin-dev/AdofaiRichPresence/releases/latest) ·
+[Report a bug / request a feature](https://github.com/turin-dev/AdofaiRichPresence/issues/new/choose) ·
+[Verification and contribution guide](CONTRIBUTING.md)
+
 A Dance of Fire and Ice mod that shows detailed, live game info on Discord (via a real
 Discord Rich Presence Application, not the game's built-in one).
 

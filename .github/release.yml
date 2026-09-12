@@ -1,0 +1,12 @@
+changelog:
+  categories:
+    - title: 수정 / Fixes
+      labels: [bug]
+    - title: 개선 / Improvements
+      labels: [enhancement]
+    - title: 의존성 / Dependencies
+      labels: [dependencies]
+    - title: 문서 / Documentation
+      labels: [documentation]
+    - title: 기타 / Other changes
+      labels: ['*']

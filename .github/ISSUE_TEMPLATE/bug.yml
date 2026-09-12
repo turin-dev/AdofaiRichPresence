@@ -1,0 +1,39 @@
+name: 버그 신고 / Bug report
+description: 재현 방법과 실행 환경을 알려주세요.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: '보안 취약점은 공개 이슈 대신 Security → Report a vulnerability로 신고해주세요. 로그의 토큰, CDN 비밀키, 개인 경로를 지워주세요.'
+  - type: input
+    id: version
+    attributes:
+      label: 모드 버전 / 커밋
+      placeholder: v1.2.0 또는 커밋 SHA
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 실행 환경
+      description: OS, 게임 버전, Unity Mod Manager 버전, Discord 버전. CDN 문제라면 Node/Docker 배포 방식도 적어주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 재현 순서
+      placeholder: '1. 어떤 화면에서 어떤 설정을 변경했나요?'
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: 예상 결과와 실제 결과
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 로그 / 스크린샷
+      description: 비밀키, 토큰, 개인정보를 제거하고 첨부해주세요.

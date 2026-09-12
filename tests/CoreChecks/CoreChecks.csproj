@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Test the production source, not a duplicate or proprietary game stubs. -->
+    <Compile Include="../../Core/CallbackRecovery.cs" Link="CallbackRecovery.cs" />
+  </ItemGroup>
+</Project>
