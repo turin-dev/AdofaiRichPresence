@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add a saved Korean / English language selector for all settings tabs, previews, connection status and Discord activity text/buttons
+- Wrap long help labels, retain original level metadata and verify translation coverage, placeholders and language persistence
+
 - Confirm full settings resets and provide an undo action that restores unsaved settings without persisting the backup
 - Wait 30 seconds after unexpected update failures, isolate cleanup failures, and restore logging/live Discord toggle behavior on mod activation
 - Add an optional checkpoint usage counter to the Discord presence and clear-result details

@@ -56,7 +56,7 @@ namespace AdofaiRichPresence.Core {
                 return null;
             }
             if (!IsHttpsUrl(uploadUrl)) {
-                MarkFailure(configurationKey, "맵 이미지 업로드 URL은 https 주소여야 합니다.");
+                MarkFailure(configurationKey, "Cover image upload URL must use HTTPS.");
                 return null;
             }
             StartUpload(previewImagePath, uploadUrl, uploadSecret, configurationKey);
@@ -80,14 +80,14 @@ namespace AdofaiRichPresence.Core {
 
             try {
                 if (req == null || req.result != UnityWebRequest.Result.Success) {
-                    MarkFailure(configurationKey, "맵 이미지 업로드 실패: " + (req?.error ?? "요청이 없습니다."));
+                    MarkFailure(configurationKey, "Cover image upload failed: " + (req?.error ?? "No request."));
                     return;
                 }
 
                 string response = req.downloadHandler != null ? req.downloadHandler.text : null;
                 string url = ExtractUrl(response);
                 if (!IsHttpsUrl(url)) {
-                    MarkFailure(configurationKey, "맵 이미지 업로드 응답에 유효한 https URL이 없습니다.");
+                    MarkFailure(configurationKey, "Cover upload response did not contain a valid HTTPS URL.");
                     return;
                 }
 
@@ -99,10 +99,10 @@ namespace AdofaiRichPresence.Core {
                 failedConfigurationKey = null;
                 justCompleted = true;
                 if (RunFreezeState.DebugLogging) {
-                    logger?.Log("맵 이미지 업로드 완료: " + url);
+                    logger?.Log("Cover image uploaded: " + url);
                 }
             } catch (Exception e) {
-                MarkFailure(configurationKey, "맵 이미지 업로드 처리 실패: " + e.Message);
+                MarkFailure(configurationKey, "Failed to process cover image upload: " + e.Message);
             } finally {
                 req?.Dispose();
             }
@@ -119,11 +119,11 @@ namespace AdofaiRichPresence.Core {
             try {
                 FileInfo file = new FileInfo(previewImagePath);
                 if (!file.Exists) {
-                    MarkFailure(configurationKey, "맵 커버 이미지를 찾을 수 없습니다.");
+                    MarkFailure(configurationKey, "Level cover image not found.");
                     return;
                 }
                 if (file.Length <= 0 || file.Length > MaxImageBytes) {
-                    MarkFailure(configurationKey, "맵 커버 이미지는 8MB 이하이어야 합니다.");
+                    MarkFailure(configurationKey, "Level cover image must be non-empty and at most 8 MB.");
                     return;
                 }
                 long sourceLength = file.Length;
@@ -133,13 +133,13 @@ namespace AdofaiRichPresence.Core {
                 pendingSourceLength = sourceLength;
                 pendingSourceLastWriteUtc = sourceLastWriteUtc;
             } catch (Exception e) {
-                MarkFailure(configurationKey, "맵 이미지 읽기 실패: " + e.Message);
+                MarkFailure(configurationKey, "Failed to read cover image: " + e.Message);
                 return;
             }
 
             string mime = GuessMimeType(previewImagePath);
             if (string.IsNullOrEmpty(mime)) {
-                MarkFailure(configurationKey, "지원하지 않는 맵 이미지 형식입니다.");
+                MarkFailure(configurationKey, "Unsupported cover image format.");
                 return;
             }
             UnityWebRequest req = null;
@@ -159,7 +159,7 @@ namespace AdofaiRichPresence.Core {
                 pendingRequest = req.SendWebRequest();
             } catch (Exception e) {
                 req?.Dispose();
-                MarkFailure(configurationKey, "맵 이미지 업로드 요청 생성 실패: " + e.Message);
+                MarkFailure(configurationKey, "Failed to create cover image upload request: " + e.Message);
             }
         }
 

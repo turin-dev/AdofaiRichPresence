@@ -19,9 +19,10 @@ mod without launching Unity or connecting to Discord:
 ```powershell
 powershell -NoProfile -File scripts/Test-SettingsReset.ps1
 powershell -NoProfile -File scripts/Test-LifecycleRecovery.ps1
+powershell -NoProfile -File scripts/Test-Localization.ps1
 ```
 
-Both scripts accept `-AdofaiDir` for a non-default game install. The lifecycle
+All three scripts accept `-AdofaiDir` for a non-default game install. The lifecycle
 check uses simulated time to verify retry behavior, cleanup failures and mod
 toggle transitions; it does not replace an in-game test.
 
@@ -48,7 +49,7 @@ or deployment API keys in source control.
 
 GitHub Actions runs the following checks on `main` pushes and every pull request:
 
-- **Repository CI**: production `CallbackRecovery` source regression scenarios on
+- **Repository CI**: translation coverage/format checks and production `CallbackRecovery` source regression scenarios on
   Windows/Linux with .NET 8; release metadata consistency and PowerShell syntax.
 - **CDN server CI**: Node tests, both Docker build contexts, container health and upload smoke tests.
 - **CodeQL**: JavaScript/TypeScript and GitHub Actions security analysis, also weekly.
@@ -62,7 +63,7 @@ pwsh -NoProfile -File scripts/Test-Repository.ps1
 
 These hosted checks do **not** build the complete net48 Unity mod or run its UMM
 integration checks: proprietary game assemblies stay on the developer's machine.
-Continue running the full local build and both compiled-mod scripts above for C#
+Continue running the full local build and all three compiled-mod scripts above for C#
 changes. Do not enable self-hosted runners for untrusted PRs or upload game DLLs.
 
 Dependabot opens weekly reviewable PRs for Actions, NuGet and both Dockerfiles.

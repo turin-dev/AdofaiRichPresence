@@ -7,5 +7,6 @@
   <ItemGroup>
     <!-- Test the production source, not a duplicate or proprietary game stubs. -->
     <Compile Include="../../Core/CallbackRecovery.cs" Link="CallbackRecovery.cs" />
+    <Compile Include="../../Core/Localization.cs" Link="Localization.cs" />
   </ItemGroup>
 </Project>

@@ -36,6 +36,22 @@ run `dotnet build`.
 
 ## Setup (one-time, in-game)
 
+### Language / 언어
+
+At the top of the mod's UMM settings panel, select **English** under
+**언어 / Language**. This changes all six settings tabs, help text, previews,
+connection status, Discord activity text, result labels and activity buttons.
+Select **한국어** to switch back. Click UMM's **Save** button to keep your choice.
+Existing settings without a language preference continue to use Korean.
+
+The selected language affects this mod only, not the game or Discord client's
+own interface. Level titles, artists and creators are preserved as entered by
+their authors. Technical logs use English; third-party error text is unchanged.
+Reset all settings returns the language to Korean; Undo reset restores the
+previous language along with the other settings.
+
+### Connection
+
 1. In-game, open the Unity Mod Manager window (default: Ctrl+F10) and select
    **ADOFAI Rich Presence**. The mod includes a default Discord Application ID,
    so the presence should work without creating an app first.

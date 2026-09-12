@@ -8,6 +8,7 @@ internal static class Program {
             CheckRetryBoundary();
             CheckCleanupAndLoggerFailures();
             CheckReset();
+            LocalizationChecks.Run();
             Console.WriteLine("PASS: 4 production CallbackRecovery regression scenarios.");
             return 0;
         } catch (Exception error) {

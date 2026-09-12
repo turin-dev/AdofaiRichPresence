@@ -255,7 +255,7 @@ namespace AdofaiRichPresence.Core {
                     + " isLevelEditor=" + SafeGet(() => ADOBase.isLevelEditor)
                     + " isLevelSelect=" + SafeGet(() => ADOBase.isLevelSelect);
             } catch (Exception e) {
-                return "debug 실패: " + e.Message;
+                return "Debug capture failed: " + e.Message;
             }
         }
 

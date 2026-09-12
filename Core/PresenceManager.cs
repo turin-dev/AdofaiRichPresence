@@ -16,7 +16,12 @@ namespace AdofaiRichPresence.Core {
         private DateTime nextClientAttemptUtc;
         private bool connectionReady;
         private bool connectionFailed;
-        private string lastConnectionError;
+        // Keep the message template so changing language also translates an existing error.
+        private Func<string, string> lastConnectionError;
+
+        private static Func<string, string> ConnectionError(string template, params object[] args) {
+            return language => Localization.Format(language, template, args);
+        }
 
         internal PresenceManager(UnityModManager.ModEntry.ModLogger logger) {
             this.logger = logger;
@@ -26,15 +31,15 @@ namespace AdofaiRichPresence.Core {
 
         internal string GetConnectionStatus(Settings settings) {
             if (settings == null || !settings.EnableDiscord) {
-                return "사용 안 함";
+                return Localization.Text(settings?.Language, "사용 안 함");
             }
             if (connectionReady) {
-                return "연결됨";
+                return settings.Text("연결됨");
             }
-            if (!string.IsNullOrEmpty(lastConnectionError)) {
-                return "오류: " + Truncate(lastConnectionError, 90);
+            if (lastConnectionError != null) {
+                return settings.Text("오류: ") + Truncate(lastConnectionError(settings.Language), 90);
             }
-            return client == null ? "연결 대기 중" : "연결 시도 중";
+            return settings.Text(client == null ? "연결 대기 중" : "연결 시도 중");
         }
 
         internal void RequestReconnect() {
@@ -62,11 +67,11 @@ namespace AdofaiRichPresence.Core {
             try {
                 client.Invoke();
             } catch (Exception e) {
-                HandleClientFailure("Discord RPC 호출 실패: " + e.Message);
+                HandleClientFailure(ConnectionError("Discord RPC 호출 실패: {0}", e.Message));
                 return;
             }
             if (connectionFailed) {
-                HandleClientFailure(lastConnectionError ?? "Discord RPC 연결이 끊겼습니다.");
+                HandleClientFailure(lastConnectionError ?? ConnectionError("Discord RPC 연결이 끊겼습니다."));
                 return;
             }
 
@@ -94,12 +99,12 @@ namespace AdofaiRichPresence.Core {
             lastSentMode = snap.Mode;
 
             if (settings.DebugLogging) {
-                logger?.Log("[디버그] mode=" + snap.Mode + " | " + GameState.DebugState());
+                logger?.Log("[Debug] mode=" + snap.Mode + " | " + GameState.DebugState());
             }
             try {
                 client.SetPresence(BuildPresence(snap, settings));
             } catch (Exception e) {
-                HandleClientFailure("Discord 상태 전송 실패: " + e.Message);
+                HandleClientFailure(ConnectionError("Discord 상태 전송 실패: {0}", e.Message));
             }
         }
 
@@ -112,9 +117,9 @@ namespace AdofaiRichPresence.Core {
                 return;
             }
             if (!ulong.TryParse(applicationId, out _)) {
-                lastConnectionError = "Application ID는 숫자만 입력해야 합니다.";
+                lastConnectionError = ConnectionError("Application ID는 숫자만 입력해야 합니다.");
                 if (failedApplicationId != applicationId || DateTime.UtcNow >= nextClientAttemptUtc) {
-                    logger?.Warning("Discord Application ID가 숫자가 아닙니다.");
+                    logger?.Warning("Discord Application ID must contain digits only.");
                     failedApplicationId = applicationId;
                     nextClientAttemptUtc = DateTime.UtcNow.AddSeconds(30);
                 }
@@ -135,22 +140,22 @@ namespace AdofaiRichPresence.Core {
                     connectionReady = true;
                     connectionFailed = false;
                     lastConnectionError = null;
-                    logger?.Log("Discord RPC 연결됨 (사용자: " + e.User.Username + ")");
+                    logger?.Log("Discord RPC connected (user: " + e.User.Username + ")");
                 };
                 client.OnConnectionFailed += (sender, e) => {
                     connectionReady = false;
                     connectionFailed = true;
-                    lastConnectionError = "Discord RPC 파이프 연결 실패 (파이프 " + e.FailedPipe + ")";
-                    logger?.Warning(lastConnectionError);
+                    lastConnectionError = ConnectionError("Discord RPC 파이프 연결 실패 (파이프 {0})", e.FailedPipe);
+                    logger?.Warning(lastConnectionError("en"));
                 };
                 client.OnPresenceUpdate += (sender, e) => {
                     if (debugLoggingEnabled) {
-                        logger?.Log("Discord Presence 전송됨: " + e.Presence?.Details + " / " + e.Presence?.State);
+                        logger?.Log("Discord presence sent: " + e.Presence?.Details + " / " + e.Presence?.State);
                     }
                 };
                 client.OnError += (sender, e) => {
-                    lastConnectionError = "Discord RPC 오류 (" + e.Code + "): " + e.Message;
-                    logger?.Error(lastConnectionError);
+                    lastConnectionError = ConnectionError("Discord RPC 오류 ({0}): {1}", e.Code, e.Message);
+                    logger?.Error(lastConnectionError("en"));
                 };
                 client.Initialize();
                 connectedApplicationId = applicationId;
@@ -160,18 +165,18 @@ namespace AdofaiRichPresence.Core {
                 lastConnectionError = null;
                 sessionStart = DateTime.UtcNow;
                 if (debugLoggingEnabled) {
-                    logger?.Log("Discord RPC 초기화 시도 (Application ID: " + applicationId + ")");
+                    logger?.Log("Initializing Discord RPC (Application ID: " + applicationId + ")");
                 }
             } catch (Exception e) {
-                logger?.Error("Discord RPC 초기화 실패: " + e.Message);
+                logger?.Error("Discord RPC initialization failed: " + e.Message);
                 DisposeClient();
                 failedApplicationId = applicationId;
                 nextClientAttemptUtc = DateTime.UtcNow.AddSeconds(30);
-                lastConnectionError = e.Message;
+                lastConnectionError = ConnectionError("{0}", e.Message);
             }
         }
 
-        private void HandleClientFailure(string message) {
+        private void HandleClientFailure(Func<string, string> message) {
             string applicationId = connectedApplicationId;
             lastConnectionError = message;
             connectionReady = false;
@@ -181,7 +186,7 @@ namespace AdofaiRichPresence.Core {
                 failedApplicationId = applicationId;
                 nextClientAttemptUtc = DateTime.UtcNow.AddSeconds(30);
             }
-            logger?.Warning(message);
+            logger?.Warning(message("en"));
         }
 
         private void DisposeClient() {
@@ -195,14 +200,14 @@ namespace AdofaiRichPresence.Core {
                 client.ClearPresence();
             } catch (Exception e) {
                 if (debugLoggingEnabled) {
-                    logger?.Warning("Discord 상태 정리 실패: " + e.Message);
+                    logger?.Warning("Failed to clear Discord activity: " + e.Message);
                 }
             }
             try {
                 client.Dispose();
             } catch (Exception e) {
                 if (debugLoggingEnabled) {
-                    logger?.Warning("Discord 클라이언트 정리 실패: " + e.Message);
+                    logger?.Warning("Failed to dispose Discord client: " + e.Message);
                 }
             } finally {
                 // A broken client must never remain reachable after cleanup. This
@@ -228,27 +233,27 @@ namespace AdofaiRichPresence.Core {
                 case GameMode.Dead:
                     details = settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.LevelName)
                         ? Truncate(snap.LevelName + (string.IsNullOrEmpty(snap.Artist) ? "" : " - " + snap.Artist), 128)
-                        : (snap.Mode == GameMode.Dead ? "죽음" : snap.Mode == GameMode.Paused ? "일시정지" : "플레이 중");
+                        : (snap.Mode == GameMode.Dead ? settings.Text("죽음") : snap.Mode == GameMode.Paused ? settings.Text("일시정지") : settings.Text("플레이 중"));
                     state = BuildStateLine(snap, settings);
                     break;
                 case GameMode.Editor:
-                    details = "레벨 에디터: " + (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.LevelName)
+                    details = settings.Text("레벨 에디터: ") + (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.LevelName)
                         ? Truncate(snap.LevelName + (string.IsNullOrEmpty(snap.Artist) ? "" : " - " + snap.Artist), 110)
-                        : "제작 중");
+                        : settings.Text("제작 중"));
                     state = BuildEditorStateLine(snap, settings);
                     break;
                 case GameMode.Cleared:
-                    details = "클리어: " + (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.LevelName)
+                    details = settings.Text("클리어: ") + (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.LevelName)
                         ? Truncate(snap.LevelName + (string.IsNullOrEmpty(snap.Artist) ? "" : " - " + snap.Artist), 110)
-                        : "완료!");
+                        : settings.Text("완료!"));
                     state = settings.ShowDetailedResult ? BuildResultStateLine(snap, settings) : "";
                     break;
                 case GameMode.LevelSelect:
-                    details = "레벨 선택 중";
+                    details = settings.Text("레벨 선택 중");
                     state = "";
                     break;
                 default:
-                    details = "메인 메뉴";
+                    details = settings.Text("메인 메뉴");
                     state = "";
                     break;
             }
@@ -281,13 +286,13 @@ namespace AdofaiRichPresence.Core {
                 var buttons = new System.Collections.Generic.List<Button>();
                 if (!string.IsNullOrEmpty(snap.WorkshopId)) {
                     buttons.Add(new Button {
-                        Label = "워크샵에서 보기",
+                        Label = settings.Text("워크샵에서 보기"),
                         Url = "https://steamcommunity.com/sharedfiles/filedetails/?id=" + snap.WorkshopId,
                     });
                 }
                 if (settings.ShowModDownloadButton) {
                     buttons.Add(new Button {
-                        Label = "이 모드 받기",
+                        Label = settings.Text("이 모드 받기"),
                         Url = "https://github.com/turin-dev/AdofaiRichPresence",
                     });
                 }
@@ -321,20 +326,20 @@ namespace AdofaiRichPresence.Core {
             var parts = new System.Collections.Generic.List<string>();
 
             if (settings.ShowAccuracy && snap.HasAccuracy) {
-                parts.Add("정확도 " + (snap.Accuracy * 100f).ToString("0.00") + "%");
+                parts.Add(settings.Text("정확도 ") + (snap.Accuracy * 100f).ToString("0.00") + "%");
             }
             if (settings.ShowXAccuracy && snap.HasXAccuracy) {
-                parts.Add("X-정확도 " + (snap.XAccuracy * 100f).ToString("0.00") + "%");
+                parts.Add(settings.Text("X-정확도 ") + (snap.XAccuracy * 100f).ToString("0.00") + "%");
             }
-            parts.Add("정확 " + snap.PerfectCount + "  빠름 " + snap.EarlyCount + "  느림 " + snap.LateCount);
+            parts.Add(settings.Text("정확 {0}  빠름 {1}  느림 {2}", snap.PerfectCount, snap.EarlyCount, snap.LateCount));
             if (settings.ShowCheckpointUsage && snap.HasCheckpointUsage && snap.CheckpointsUsed > 0) {
-                parts.Add("체크포인트 " + snap.CheckpointsUsed + "회");
+                parts.Add(settings.Text("체크포인트 {0}회", snap.CheckpointsUsed));
             }
             if (settings.ShowDifficulty && snap.Difficulty > 0) {
-                parts.Add("난이도 " + snap.Difficulty + "/10");
+                parts.Add(settings.Text("난이도 ") + snap.Difficulty + "/10");
             }
             if (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.Author)) {
-                parts.Add("제작: " + snap.Author);
+                parts.Add(settings.Text("제작: ") + snap.Author);
             }
 
             return Truncate(string.Join("  |  ", parts.ToArray()), 128);
@@ -344,13 +349,13 @@ namespace AdofaiRichPresence.Core {
             var parts = new System.Collections.Generic.List<string>();
 
             if (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.Author)) {
-                parts.Add("제작: " + snap.Author);
+                parts.Add(settings.Text("제작: ") + snap.Author);
             }
             if (settings.ShowRemainingTiles && snap.TotalTiles > 0) {
-                parts.Add(snap.TotalTiles + " 타일");
+                parts.Add(snap.TotalTiles + settings.Text(" 타일"));
             }
             if (settings.ShowDifficulty && snap.Difficulty > 0) {
-                parts.Add("난이도 " + snap.Difficulty + "/10");
+                parts.Add(settings.Text("난이도 ") + snap.Difficulty + "/10");
             }
             if (settings.ShowBpm && snap.Bpm > 0) {
                 parts.Add(Math.Round(snap.Bpm) + " BPM");
@@ -366,27 +371,27 @@ namespace AdofaiRichPresence.Core {
             // time-sensitive info survives and static/flavor info drops first.
             if (settings.ShowModeState) {
                 if (snap.Mode == GameMode.Dead) {
-                    parts.Add("죽음");
+                    parts.Add(settings.Text("죽음"));
                 } else if (snap.Mode == GameMode.Paused) {
-                    parts.Add("일시정지");
+                    parts.Add(settings.Text("일시정지"));
                 } else if (snap.Mode == GameMode.Playing) {
-                    parts.Add(settings.ShowAsListening ? "듣는 중" : "플레이 중");
+                    parts.Add(settings.ShowAsListening ? settings.Text("듣는 중") : settings.Text("플레이 중"));
                 }
             }
             if (settings.ShowProgress) {
                 parts.Add((snap.Progress * 100f).ToString("0.0") + "%");
             }
             if (settings.ShowRemainingTiles && snap.TotalTiles > 0) {
-                parts.Add("남은 " + snap.RemainingTiles + "/" + snap.TotalTiles + " 타일");
+                parts.Add(settings.Text("남은 {0}/{1} 타일", snap.RemainingTiles, snap.TotalTiles));
             }
             if (settings.ShowCheckpointUsage && snap.HasCheckpointUsage && snap.CheckpointsUsed > 0) {
-                parts.Add("체크포인트 " + snap.CheckpointsUsed + "회");
+                parts.Add(settings.Text("체크포인트 {0}회", snap.CheckpointsUsed));
             }
             if (settings.ShowAccuracy && snap.HasAccuracy) {
-                parts.Add("정확도 " + (snap.Accuracy * 100f).ToString("0.0") + "%");
+                parts.Add(settings.Text("정확도 ") + (snap.Accuracy * 100f).ToString("0.0") + "%");
             }
             if (settings.ShowXAccuracy && snap.HasXAccuracy) {
-                parts.Add("X-정확도 " + (snap.XAccuracy * 100f).ToString("0.0") + "%");
+                parts.Add(settings.Text("X-정확도 ") + (snap.XAccuracy * 100f).ToString("0.0") + "%");
             }
             if (settings.ShowBpm && snap.Bpm > 0) {
                 parts.Add(Math.Round(snap.Bpm) + " BPM");
@@ -395,10 +400,10 @@ namespace AdofaiRichPresence.Core {
                 parts.Add(FormatTime(snap.ElapsedSeconds) + " / " + FormatTime(snap.TotalSeconds));
             }
             if (settings.ShowDifficulty && snap.Difficulty > 0) {
-                parts.Add("난이도 " + snap.Difficulty + "/10");
+                parts.Add(settings.Text("난이도 ") + snap.Difficulty + "/10");
             }
             if (settings.ShowLevelAndArtist && !string.IsNullOrEmpty(snap.Author)) {
-                parts.Add("제작: " + snap.Author);
+                parts.Add(settings.Text("제작: ") + snap.Author);
             }
 
             return Truncate(string.Join("  |  ", parts.ToArray()), 128);

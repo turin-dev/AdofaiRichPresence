@@ -84,7 +84,7 @@ namespace AdofaiRichPresence.Core {
         private static void Postfix() {
             RunFreezeState.PauseMenuOpen = true;
             if (RunFreezeState.DebugLogging) {
-                RunFreezeState.Logger?.Log("[이벤트] PauseMenu.Show 호출됨");
+                RunFreezeState.Logger?.Log("[Event] PauseMenu.Show called");
             }
         }
     }
@@ -94,7 +94,7 @@ namespace AdofaiRichPresence.Core {
         private static void Postfix() {
             RunFreezeState.PauseMenuOpen = false;
             if (RunFreezeState.DebugLogging) {
-                RunFreezeState.Logger?.Log("[이벤트] PauseMenu.Hide 호출됨");
+                RunFreezeState.Logger?.Log("[Event] PauseMenu.Hide called");
             }
         }
     }
@@ -104,7 +104,7 @@ namespace AdofaiRichPresence.Core {
         private static void Postfix(bool __result) {
             RunFreezeState.PauseMenuOpen = __result;
             if (RunFreezeState.DebugLogging) {
-                RunFreezeState.Logger?.Log("[이벤트] TogglePauseGame 호출됨, 결과=" + __result);
+                RunFreezeState.Logger?.Log("[Event] TogglePauseGame called, result=" + __result);
             }
         }
     }

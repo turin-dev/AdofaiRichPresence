@@ -57,7 +57,7 @@ namespace AdofaiRichPresence {
             try {
                 settings?.Draw(modEntry, presenceManager);
             } catch (Exception e) {
-                LogCallbackError(modEntry, "설정 화면 갱신 실패", e);
+                LogCallbackError(modEntry, "Failed to draw settings", e);
             }
         }
 
@@ -65,7 +65,7 @@ namespace AdofaiRichPresence {
             try {
                 settings?.Save(modEntry);
             } catch (Exception e) {
-                LogCallbackError(modEntry, "설정 저장 실패", e);
+                LogCallbackError(modEntry, "Failed to save settings", e);
             }
         }
 
@@ -79,7 +79,7 @@ namespace AdofaiRichPresence {
                     presenceManager.Tick(settings, deltaTime);
                 },
                 () => presenceManager.Stop(),
-                e => LogCallbackError(modEntry, "상태 갱신 또는 정리 실패 (30초 후 재시도)", e));
+                e => LogCallbackError(modEntry, "Activity update or cleanup failed (retry in 30 seconds)", e));
         }
 
         private static bool OnUnload(UnityModManager.ModEntry modEntry) {
