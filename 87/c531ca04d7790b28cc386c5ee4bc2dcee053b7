@@ -1,0 +1,23 @@
+README.md
+  s_c27074af772a52::t_3d0028c93042b4 55
+CHANGELOG.md
+  s_c27074af772a52::t_3d0028c93042b4 6
+Core/LevelImageUploader.cs
+  s_c27074af772a52::t_3d0028c93042b4 17-18,21-22,44-45,49-50,73-74,78-79,97-98,129-130,132-134,235-248,267-268,282-283
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "87c531ca04d7790b28cc386c5ee4bc2dcee053b7",
+  "prompts": {},
+  "sessions": {
+    "s_c27074af772a52": {
+      "agent_id": {
+        "tool": "Codex",
+        "id": "01a090b0-040b-77f0-92ac-a19b5d10be8b",
+        "model": "gpt-5"
+      },
+      "human_author": "turin-dev <me@turin.my>"
+    }
+  }
+}
