@@ -1,0 +1,25 @@
+README.md
+  s_c27074af772a52::t_930b2d75371a86 49-58
+Settings.cs
+  s_c27074af772a52::t_930b2d75371a86 45-47,61-64,67-80,349-370
+CHANGELOG.md
+  s_c27074af772a52::t_930b2d75371a86 5-6
+scripts/Test-SettingsReset.ps1
+  s_c27074af772a52::t_930b2d75371a86 1-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "02e952dcba5d14f1574c09c959528289d58dddcc",
+  "prompts": {},
+  "sessions": {
+    "s_c27074af772a52": {
+      "agent_id": {
+        "tool": "Codex",
+        "id": "01a090b0-040b-77f0-92ac-a19b5d10be8b",
+        "model": "gpt-6"
+      },
+      "human_author": "turin-dev <me@turin.my>"
+    }
+  }
+}
