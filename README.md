@@ -46,6 +46,16 @@ game's own Discord status run again.
 The **표시 정보** tab includes an example preview so you can check the two
 Discord text lines and their 128-character limits before starting a level.
 
+**기본 설정 전체 복원** asks for confirmation before changing any settings,
+including the CDN URL and upload secret. **복원 취소** restores the settings and
+tab from immediately before the last reset, including unsaved edits. These
+changes take effect immediately; press UMM's Save button to persist them. The
+undo snapshot stays in memory only and is lost when the mod is reloaded.
+
+To verify reset/undo against a Debug build without launching the game, run
+`powershell -NoProfile -File scripts/Test-SettingsReset.ps1` after `dotnet build`.
+Pass `-AdofaiDir` if the game uses a different install location.
+
 ## What it shows
 
 Configurable in the mod's settings panel:

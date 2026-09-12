@@ -42,6 +42,9 @@ namespace AdofaiRichPresence {
         // UI-only navigation state; not meaningful to persist as user-facing config,
         // but harmless if UMM's serializer picks it up.
         private int selectedTab;
+        private bool resetConfirmationPending;
+        private Settings settingsBeforeReset;
+        private int tabBeforeReset;
 
         private static readonly string[] TabNames = { "표시 정보", "동작 방식", "Discord 연결", "이미지", "CDN", "디버그" };
 
@@ -55,10 +58,26 @@ namespace AdofaiRichPresence {
             GUILayout.Label("설정을 바꾼 뒤 Unity Mod Manager의 저장 버튼을 눌러 변경사항을 보존하세요.");
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("기본 설정 전체 복원", GUILayout.Width(150))) {
-                ResetToDefaults();
+                resetConfirmationPending = true;
             }
-            GUILayout.Label("저장 버튼을 누르기 전까지는 복원 결과를 취소할 수 있습니다.");
+            if (settingsBeforeReset != null && GUILayout.Button("복원 취소", GUILayout.Width(100))) {
+                UndoReset();
+            }
             GUILayout.EndHorizontal();
+            if (resetConfirmationPending) {
+                GUILayout.Label("Discord 연결, CDN 주소와 비밀키를 포함한 모든 설정을 기본값으로 바꿉니다.");
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("복원 실행", GUILayout.Width(100))) {
+                    ResetToDefaults();
+                }
+                if (GUILayout.Button("취소", GUILayout.Width(100))) {
+                    resetConfirmationPending = false;
+                }
+                GUILayout.EndHorizontal();
+            }
+            if (settingsBeforeReset != null) {
+                GUILayout.Label("복원 취소를 누르면 직전 설정으로 돌아갑니다. 변경사항은 즉시 적용되며, 보존하려면 저장하세요.");
+            }
             GUILayout.Space(8);
 
             selectedTab = Mathf.Clamp(selectedTab, 0, TabNames.Length - 1);
@@ -327,7 +346,28 @@ namespace AdofaiRichPresence {
         }
 
         private void ResetToDefaults() {
-            Settings defaults = new Settings();
+            // All persisted settings are scalars or immutable strings. Do not retain
+            // earlier undo snapshots or UI confirmation state in this snapshot.
+            settingsBeforeReset = (Settings)MemberwiseClone();
+            settingsBeforeReset.settingsBeforeReset = null;
+            settingsBeforeReset.resetConfirmationPending = false;
+            tabBeforeReset = selectedTab;
+            CopyFrom(new Settings());
+            selectedTab = 0;
+            resetConfirmationPending = false;
+        }
+
+        private void UndoReset() {
+            if (settingsBeforeReset == null) {
+                return;
+            }
+            CopyFrom(settingsBeforeReset);
+            selectedTab = tabBeforeReset;
+            settingsBeforeReset = null;
+            resetConfirmationPending = false;
+        }
+
+        private void CopyFrom(Settings defaults) {
             ShowLevelAndArtist = defaults.ShowLevelAndArtist;
             ShowProgress = defaults.ShowProgress;
             ShowAccuracy = defaults.ShowAccuracy;
@@ -356,7 +396,6 @@ namespace AdofaiRichPresence {
             CdnUploadUrl = defaults.CdnUploadUrl;
             CdnUploadSecret = defaults.CdnUploadSecret;
             DebugLogging = defaults.DebugLogging;
-            selectedTab = 0;
         }
     }
 }

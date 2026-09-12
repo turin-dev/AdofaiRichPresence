@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Confirm full settings resets and provide an undo action that restores unsaved settings without persisting the backup
+
 - Add an optional checkpoint usage counter to the Discord presence and clear-result details
 - Refresh changed level-cover files automatically instead of reusing a stale CDN URL
 
